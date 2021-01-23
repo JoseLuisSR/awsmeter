@@ -1,29 +1,24 @@
 package org.apache.jmeter.protocol.aws.kinesis.sampler;
 
 import org.apache.jmeter.config.Argument;
-import org.apache.jmeter.protocol.aws.AWSClient;
 import org.apache.jmeter.protocol.aws.AWSSampler;
-import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.samplers.SampleResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.SdkClient;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.kinesis.model.KinesisException;
 import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class KinesisProducerSampler extends AWSSampler implements JavaSamplerClient, AWSClient {
-
-    private static final Logger log = LoggerFactory.getLogger(KinesisProducerSampler.class);
+public class KinesisProducerSampler extends AWSSampler {
 
     private static final String KINESIS_STREAM_NAME = "kinesis_stream_name";
 
@@ -32,11 +27,6 @@ public class KinesisProducerSampler extends AWSSampler implements JavaSamplerCli
     private static final String KINESIS_DATA_RECORD = "data_record";
 
     private static final List<Argument> KINESIS_PARAMETERS = Stream.of(
-            new Argument(AWS_ACCESS_KEY_ID, ""),
-            new Argument(AWS_SECRET_ACCESS_KEY, ""),
-            new Argument(AWS_SESSION_TOKEN, ""),
-            new Argument(AWS_REGION, ""),
-            new Argument(AWS_CONFIG_PROFILE, AWS_DEFAULT_PROFILE),
             new Argument(KINESIS_STREAM_NAME, ""),
             new Argument(KINESIS_PARTITION_KEY, ""),
             new Argument(KINESIS_DATA_RECORD, ""))
@@ -55,23 +45,25 @@ public class KinesisProducerSampler extends AWSSampler implements JavaSamplerCli
     @Override
     public Arguments getDefaultParameters() {
         Arguments defaultParameters = new Arguments();
-        defaultParameters.setArguments(KINESIS_PARAMETERS);
+        defaultParameters.setArguments(Arrays.asList(AWS_PARAMETERS, KINESIS_PARAMETERS).stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toList()));
         return defaultParameters;
     }
 
     @Override
     public void setupTest(JavaSamplerContext context) {
 
-        log.info("Setup Kinesis Producer Sampler.");
+        getNewLogger().info("Setup Kinesis Producer Sampler.");
         Map<String, String> credentials = new HashMap<>();
 
         context.getParameterNamesIterator()
                 .forEachRemaining( k -> {
                     credentials.put(k, context.getParameter(k));
-                    log.info("Parameter: " + k + ", value: " + credentials.get(k));
+                    getNewLogger().info("Parameter: " + k + ", value: " + credentials.get(k));
                 });
 
-        log.info("Create Kinesis Producer");
+        getNewLogger().info("Create Kinesis Producer");
         kinesisClient = (KinesisClient) createSdkClient(credentials);
     }
 
@@ -82,7 +74,7 @@ public class KinesisProducerSampler extends AWSSampler implements JavaSamplerCli
         sampleResultStart(result, context.getParameter(KINESIS_DATA_RECORD));
 
         try {
-            log.info("Publishing Data Record.");
+            getNewLogger().info("Publishing Data Record.");
             String sequenceNum = kinesisClient.putRecord(createPutRecordRequest(context)).sequenceNumber();
             sampleResultSuccess(result,sequenceNum);
         }catch (KinesisException e){
