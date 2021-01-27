@@ -112,3 +112,7 @@ Leave this parameter empty to use the aws region defined in config file in .aws 
 * **data_record**: This the information/message that is going publish in Kinesis Data Stream. Data record is composed of a 
   sequence number, a partition key, and a data blob, which is an immutable sequence of bytes. Kinesis Data Streams does not inspect, 
   interpret, or change the data in the blob in any way. A data blob can be up to 1 MB.
+
+
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/KinesisProducesJavaRequest.png)
