@@ -37,7 +37,6 @@ test {
 }
 
 task uberJar(type: Jar) {
-    archiveClassifier = 'uber'
 
     from sourceSets.main.output
 
