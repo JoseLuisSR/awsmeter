@@ -28,7 +28,7 @@ the below command:
 
     gradlew uberJar
 
-Gradle builds the `awsmeter-x.y.z.jar` in `/awsmeter/build/libs` to install it in JMeter jut put in 
+Gradle builds the `awsmeter-x.y.z.jar` in `/awsmeter/build/libs` to install `awsmeter` in JMeter just put in 
 
     $JMETER_HOME/lib/ext
 
@@ -100,13 +100,14 @@ Leave this parameter empty to use the aws region defined in config file in .aws 
   you can choose other that you have in credentials and config files.
   
 
-* **kinesis_stream_name**: The name of the Stream you have created in specific aws region. [Steps to create a Data Stream].(https://docs.aws.amazon.com/streams/latest/dev/tutorial-stock-data-kplkcl-create-stream.html)
+* **kinesis_stream_name**: The name of the Stream you have created in specific aws region. [Steps to create a Data Stream](https://docs.aws.amazon.com/streams/latest/dev/tutorial-stock-data-kplkcl-create-stream.html).
 
 
 * **partition_key**: Is a value used to distribute the data records between the shards, the stream is composed of one or more 
   shards and each shard is a sequence of data records. The partition key determine which shard a given data record belongs to.
   You can choose. Partition keys are Unicode strings, with a maximum length limit of 256 characters for each key. You can choose
-  the partition key you want.
+  the partition key you want. A [Counter](http://jmeter.apache.org/usermanual/component_reference.html#Counter)
+  is used as partition key to distributed data records across all available shards in stream.
   
 
 * **data_record**: This the information/message that is going publish in Kinesis Data Stream. Data record is composed of a 

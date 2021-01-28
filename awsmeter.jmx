@@ -27,6 +27,16 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
+        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Partition Key Counter" enabled="true">
+          <stringProp name="CounterConfig.start">0</stringProp>
+          <stringProp name="CounterConfig.end"></stringProp>
+          <stringProp name="CounterConfig.incr">1</stringProp>
+          <stringProp name="CounterConfig.name">partition_key_counter</stringProp>
+          <stringProp name="CounterConfig.format"></stringProp>
+          <boolProp name="CounterConfig.per_user">true</boolProp>
+          <stringProp name="TestPlan.comments">Counter as parition key to distribute data records across all shards in Kinesis Data Stream.</stringProp>
+        </CounterConfig>
+        <hashTree/>
         <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Kinesis Producer Request" enabled="true">
           <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
@@ -62,12 +72,12 @@
               </elementProp>
               <elementProp name="partition_key" elementType="Argument">
                 <stringProp name="Argument.name">partition_key</stringProp>
-                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.value">${partition_key_counter}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="data_record" elementType="Argument">
                 <stringProp name="Argument.name">data_record</stringProp>
-                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.value">{     &quot;message&quot;: &quot;Hello awsmete JMeter plugin&quot; }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
