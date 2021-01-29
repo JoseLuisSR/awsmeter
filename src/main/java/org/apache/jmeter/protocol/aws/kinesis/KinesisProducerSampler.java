@@ -7,9 +7,11 @@ import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.samplers.SampleResult;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.SdkClient;
+import software.amazon.awssdk.core.SdkField;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.kinesis.model.KinesisException;
 import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
+import software.amazon.awssdk.services.kinesis.model.PutRecordResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -71,12 +73,18 @@ public class KinesisProducerSampler extends AWSSampler {
     public SampleResult runTest(JavaSamplerContext context) {
 
         SampleResult result = newSampleResult();
-        sampleResultStart(result, context.getParameter(KINESIS_DATA_RECORD));
+        sampleResultStart(result, String.format("Stream Name: %s \nPartition Key: %s \nData Record: %s",
+                context.getParameter(KINESIS_STREAM_NAME),
+                context.getParameter(KINESIS_PARTITION_KEY),
+                context.getParameter(KINESIS_DATA_RECORD)));
 
         try {
             getNewLogger().info("Publishing Data Record.");
-            String sequenceNum = kinesisClient.putRecord(createPutRecordRequest(context)).sequenceNumber();
-            sampleResultSuccess(result,sequenceNum);
+            PutRecordResponse response = kinesisClient.putRecord(createPutRecordRequest(context));
+            sampleResultSuccess(result,String.format("Shard id: %s \nSequence Number: %s \nEncryption Type: %s",
+                    response.shardId(),
+                    response.sequenceNumber(),
+                    response.encryptionTypeAsString()));
         }catch (KinesisException e){
             sampleResultFail(result, e.awsErrorDetails().errorCode(), e.awsErrorDetails().errorMessage());
         }

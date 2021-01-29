@@ -96,7 +96,7 @@ Leave this parameter empty to use the aws region defined in config file in .aws 
   
 
 * **aws_configure_profile**: When you use profile to group a collections of settings and credentials. When you have multiple 
-  aws accounts (AWS Organization) you can use profile to classify credentials for each AWS account. The main profile is 'default',
+  aws accounts ([AWS Organization](https://aws.amazon.com/organizations/)) you can use profile to classify credentials for each AWS account. The main profile is 'default',
   you can choose other that you have in credentials and config files.
   
 
@@ -117,3 +117,53 @@ Leave this parameter empty to use the aws region defined in config file in .aws 
 
 
 ![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/KinesisProducesJavaRequest.png)
+
+
+# Testing
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-kinesis-context-view.png)
+
+In this example we are going to publish a message in Kinesis stream using `awsmeter` then we are going to consume the message using aws cli, 
+the steps are:
+
+1. Start JMeter and open `awsmeter` test plan present in this repository.
+
+
+2. Fill the parameters needed for the test. In this case we are using the credentials and config files to get values of access key id, 
+   secret and aws region associate with default profile. Just put the value of stream name.
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/credentials-file.png)
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/config-file.png)
+
+
+3. Run the test plan with one thread. You can change the number of thread to execute load test but be care with the charge of Kinesis.
+[Kinesis Data Stream pricing](https://aws.amazon.com/kinesis/data-streams/pricing/).
+
+
+4. Check the response to see the shard id where data record were published and sequence number.
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-kinesis-response.png)
+
+5. See the CloudWatch metrics for Kinesis to get information about the incoming data count and Bytes and others metrics very helpful 
+   to validate the throughput of kinesis. [Monitoring Kinesis Data Stream](https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html).
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/kinesis-metrics.png)
+
+6. Get shard iterator through AWS CLI with the command:
+
+`aws kinesis get-shard-iterator --stream-name {name} --shard-id {id} --shard-iterator-type AT_SEQUENCE_NUMBER --starting-sequence-number {sequenceNumber}`
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awscli-kinesis-get-shard-iterator.png)
+
+7 Get Kinesis data record using the shard iterator of the previous point and AWS CLI with the command:
+
+`aws kinesis get-records --shard-iterator {shardIterator}`
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awscli-kinesis-get-records.png)
+
+8. Decoded from Base64 format the value of the field Data:
+
+`eyAgICAgIm1lc3NhZ2UiOiAiSGVsbG8gYXdzbWV0ZXIgSk1ldGVyIHBsdWdpbiIgfQ`
+
+`{     "message": "Hello awsmeter JMeter plugin" }`

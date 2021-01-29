@@ -67,7 +67,7 @@
               </elementProp>
               <elementProp name="kinesis_stream_name" elementType="Argument">
                 <stringProp name="Argument.name">kinesis_stream_name</stringProp>
-                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.value">client-stream</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="partition_key" elementType="Argument">
@@ -77,7 +77,7 @@
               </elementProp>
               <elementProp name="data_record" elementType="Argument">
                 <stringProp name="Argument.name">data_record</stringProp>
-                <stringProp name="Argument.value">{     &quot;message&quot;: &quot;Hello awsmete JMeter plugin&quot; }</stringProp>
+                <stringProp name="Argument.value">{     &quot;message&quot;: &quot;Hello awsmeter JMeter plugin&quot; }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
