@@ -138,6 +138,11 @@
                 <stringProp name="Argument.value">Hello World</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
+              <elementProp name="sqs_delay_seconds" elementType="Argument">
+                <stringProp name="Argument.name">sqs_delay_seconds</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
             </collectionProp>
           </elementProp>
           <stringProp name="classname">org.apache.jmeter.protocol.aws.sqs.SQSProducerSampler</stringProp>

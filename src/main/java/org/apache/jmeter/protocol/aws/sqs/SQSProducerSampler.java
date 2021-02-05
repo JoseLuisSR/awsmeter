@@ -7,10 +7,7 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 import software.amazon.awssdk.core.SdkClient;
 import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
-import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
-import software.amazon.awssdk.services.sqs.model.SqsException;
+import software.amazon.awssdk.services.sqs.model.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,9 +22,12 @@ public class SQSProducerSampler extends AWSSampler {
 
     private static final String SQS_MESSAGE = "sqs_message";
 
+    private static final String SQS_DELAY_SECONDS = "sqs_delay_seconds";
+
     private static final List<Argument> SQS_PARAMETERS = Stream.of(
             new Argument(SQS_QUEUE_NAME, ""),
-            new Argument(SQS_MESSAGE, ""))
+            new Argument(SQS_MESSAGE, ""),
+            new Argument(SQS_DELAY_SECONDS, "0"))
             .collect(Collectors.toList());
 
     private SqsClient sqsClient;
@@ -97,7 +97,7 @@ public class SQSProducerSampler extends AWSSampler {
                         .build())
                         .queueUrl())
                 .messageBody(context.getParameter(SQS_MESSAGE))
+                .delaySeconds(context.getIntParameter(SQS_DELAY_SECONDS))
                 .build();
     }
-
 }
