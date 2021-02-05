@@ -1,8 +1,0 @@
-org/apache/jmeter/protocol/aws/AWSClient.java
- org.apache.jmeter.protocol.aws.AWSClient
-org/apache/jmeter/protocol/aws/AWSSampler.java
- org.apache.jmeter.protocol.aws.AWSSampler
-org/apache/jmeter/protocol/aws/kinesis/KinesisProducerSampler.java
- org.apache.jmeter.protocol.aws.kinesis.KinesisProducerSampler
-org/apache/jmeter/protocol/aws/sqs/SQSProducerSampler.java
- org.apache.jmeter.protocol.aws.sqs.SQSProducerSampler
