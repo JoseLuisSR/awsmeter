@@ -9,10 +9,8 @@ import software.amazon.awssdk.core.SdkClient;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,13 +18,19 @@ public class SQSProducerSampler extends AWSSampler {
 
     private static final String SQS_QUEUE_NAME = "sqs_queue_name";
 
-    private static final String SQS_MESSAGE = "sqs_message";
+    private static final String SQS_MSG_BODY = "sqs_msg_body";
 
     private static final String SQS_DELAY_SECONDS = "sqs_delay_seconds";
 
+    private static final String SQS_MSG_GROUP_ID = "sqs_msg_group_id";
+
+    private static final String SQS_MSG_DEDUPLICATION_ID = "sqs_msg_deduplication_id";
+
     private static final List<Argument> SQS_PARAMETERS = Stream.of(
             new Argument(SQS_QUEUE_NAME, ""),
-            new Argument(SQS_MESSAGE, ""),
+            new Argument(SQS_MSG_BODY, ""),
+            new Argument(SQS_MSG_GROUP_ID, ""),
+            new Argument(SQS_MSG_DEDUPLICATION_ID, ""),
             new Argument(SQS_DELAY_SECONDS, "0"))
             .collect(Collectors.toList());
 
@@ -70,7 +74,7 @@ public class SQSProducerSampler extends AWSSampler {
         SampleResult result = newSampleResult();
         sampleResultStart(result, String.format("SQS Queue Name: %s \nSQS Message: %s",
                 context.getParameter(SQS_QUEUE_NAME),
-                context.getParameter(SQS_MESSAGE)));
+                context.getParameter(SQS_MSG_BODY)));
 
         try{
             getNewLogger().info("Put Message on Queue");
@@ -91,12 +95,35 @@ public class SQSProducerSampler extends AWSSampler {
     }
 
     public SendMessageRequest createSendMessageRequest(JavaSamplerContext context){
+
+        if( Optional.ofNullable(context.getParameter(SQS_MSG_GROUP_ID))
+                .filter(Predicate.not(String::isEmpty))
+                .isPresent() )
+            return createMsgFIFOQueue(context);
+        else
+            return createMsgStandardQueue(context);
+    }
+
+    public SendMessageRequest createMsgStandardQueue(JavaSamplerContext context){
         return SendMessageRequest.builder()
                 .queueUrl(sqsClient.getQueueUrl(GetQueueUrlRequest.builder()
                         .queueName(context.getParameter(SQS_QUEUE_NAME))
                         .build())
                         .queueUrl())
-                .messageBody(context.getParameter(SQS_MESSAGE))
+                .messageBody(context.getParameter(SQS_MSG_BODY))
+                .delaySeconds(context.getIntParameter(SQS_DELAY_SECONDS))
+                .build();
+    }
+
+    public SendMessageRequest createMsgFIFOQueue(JavaSamplerContext context){
+        return SendMessageRequest.builder()
+                .queueUrl(sqsClient.getQueueUrl(GetQueueUrlRequest.builder()
+                        .queueName(context.getParameter(SQS_QUEUE_NAME))
+                        .build())
+                        .queueUrl())
+                .messageBody(context.getParameter(SQS_MSG_BODY))
+                .messageGroupId(context.getParameter(SQS_MSG_GROUP_ID))
+                .messageDeduplicationId(context.getParameter(SQS_MSG_DEDUPLICATION_ID))
                 .delaySeconds(context.getIntParameter(SQS_DELAY_SECONDS))
                 .build();
     }

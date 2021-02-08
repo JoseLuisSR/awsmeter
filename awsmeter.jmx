@@ -12,7 +12,7 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Kinesis Thread Group" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Kinesis Thread Group" enabled="true">
         <stringProp name="TestPlan.comments">Thread group to execute load testing ovwe aws kinesis data stream.</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -130,12 +130,22 @@
               </elementProp>
               <elementProp name="sqs_queue_name" elementType="Argument">
                 <stringProp name="Argument.name">sqs_queue_name</stringProp>
-                <stringProp name="Argument.value">customer-request</stringProp>
+                <stringProp name="Argument.value"></stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
-              <elementProp name="sqs_message" elementType="Argument">
-                <stringProp name="Argument.name">sqs_message</stringProp>
-                <stringProp name="Argument.value">Hello World</stringProp>
+              <elementProp name="sqs_msg_body" elementType="Argument">
+                <stringProp name="Argument.name">sqs_msg_body</stringProp>
+                <stringProp name="Argument.value">{     &quot;message&quot;: &quot;Hello awsmeter JMeter plugin&quot; }</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sqs_msg_group_id" elementType="Argument">
+                <stringProp name="Argument.name">sqs_msg_group_id</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sqs_msg_deduplication_id" elementType="Argument">
+                <stringProp name="Argument.name">sqs_msg_deduplication_id</stringProp>
+                <stringProp name="Argument.value"></stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="sqs_delay_seconds" elementType="Argument">
