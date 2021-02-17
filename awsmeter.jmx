@@ -138,6 +138,11 @@
                 <stringProp name="Argument.value">{     &quot;message&quot;: &quot;Hello awsmeter JMeter plugin&quot; }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
+              <elementProp name="sqs_msg_attributes" elementType="Argument">
+                <stringProp name="Argument.name">sqs_msg_attributes</stringProp>
+                <stringProp name="Argument.value">[     {         &quot;name&quot;: &quot;attribute-1&quot;,         &quot;type&quot;: &quot;String&quot;,         &quot;value&quot;: &quot;aws&quot;     },     {         &quot;name&quot;: &quot;attribute-2&quot;,         &quot;type&quot;: &quot;String&quot;,         &quot;value&quot;: &quot;meter&quot;     },     {         &quot;name&quot;: &quot;attribute-3&quot;,         &quot;type&quot;: &quot;String.custom&quot;,         &quot;value&quot;: &quot;sqs&quot;     },     {         &quot;name&quot;: &quot;attribute-4&quot;,         &quot;type&quot;: &quot;Number&quot;,         &quot;value&quot;: &quot;123&quot;     },     {         &quot;name&quot;: &quot;attribute-5&quot;,         &quot;type&quot;: &quot;Number&quot;,         &quot;value&quot;: &quot;456&quot;     },         {         &quot;name&quot;: &quot;attribute-6&quot;,         &quot;type&quot;: &quot;Number.int&quot;,         &quot;value&quot;: &quot;789&quot;     },     {         &quot;name&quot;: &quot;attribute-7&quot;,         &quot;type&quot;: &quot;Binary&quot;,         &quot;value&quot;: &quot;01100001 01110111 01110011&quot;     },     {         &quot;name&quot;: &quot;attribute-8&quot;,         &quot;type&quot;: &quot;Binary&quot;,         &quot;value&quot;: &quot;01101101 01100101 01110100 01100101 01110010&quot;     },     {         &quot;name&quot;: &quot;attribute-9&quot;,         &quot;type&quot;: &quot;Binary.img&quot;,         &quot;value&quot;: &quot;01101101 01100101 01110100 01100101 01110010&quot;     } ]</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
               <elementProp name="sqs_msg_group_id" elementType="Argument">
                 <stringProp name="Argument.name">sqs_msg_group_id</stringProp>
                 <stringProp name="Argument.value"></stringProp>
