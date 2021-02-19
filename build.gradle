@@ -30,6 +30,7 @@ dependencies {
     implementation 'software.amazon.awssdk:kinesis'
     implementation 'software.amazon.awssdk:sqs'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.12.1'
+    implementation 'io.vavr:vavr:0.10.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }

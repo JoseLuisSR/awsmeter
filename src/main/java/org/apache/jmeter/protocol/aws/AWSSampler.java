@@ -26,6 +26,8 @@ public abstract class AWSSampler implements JavaSamplerClient, AWSClient {
 
     public static final String AWS_DEFAULT_PROFILE = "default";
 
+    public static final String FAIL_CODE = "500";
+
     private static final String ENCODING = "UTF-8";
 
     public static final List<Argument> AWS_PARAMETERS = Stream.of(
