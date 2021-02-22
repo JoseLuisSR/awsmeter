@@ -21,8 +21,7 @@ public class SQSProducerFifoQueue extends SQSProducerSampler{
             new Argument(SQS_MSG_BODY, ""),
             new Argument(SQS_MSG_ATTRIBUTES, ""),
             new Argument(SQS_MSG_GROUP_ID, ""),
-            new Argument(SQS_MSG_DEDUPLICATION_ID, ""),
-            new Argument(SQS_DELAY_SECONDS, "0"))
+            new Argument(SQS_MSG_DEDUPLICATION_ID, ""))
             .collect(Collectors.toList());
 
     @Override
@@ -39,7 +38,7 @@ public class SQSProducerFifoQueue extends SQSProducerSampler{
 
         SampleResult result = newSampleResult();
         sampleResultStart(result, String.format("Queue Name: %s \nMsg Body : %s \nMsg Attribute: %s " +
-                        "\nMsg Group Id: %s \nMsg Deduplication Id: %s \nDelay sec: %s",
+                        "\nMsg Group Id: %s \nMsg Deduplication Id: %s",
                 context.getParameter(SQS_QUEUE_NAME),
                 context.getParameter(SQS_MSG_BODY),
                 context.getParameter(SQS_MSG_ATTRIBUTES),
