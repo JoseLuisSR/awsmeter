@@ -51,7 +51,7 @@ The fields of each Java Request Sampler per SQS queue type are:
 
 ## Standard
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/SQSStandardProducerJavaSampler.png)
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSStandardProducerJavaSampler.png)
 
 * **sqs_queue_name:** Name of the queue, remember for FIFO queue you need to use `.fifo` suffix at the end.
 
@@ -93,7 +93,7 @@ You can define custom data type label with the format `.custom-data-type` like B
 ## FIFO
 
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/SQSFIFOProducerJavaSampler.png)
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSFIFOProducerJavaSampler.png)
 
 
 There are some fields share between Standard and FIFO queue like queue name, body and message attributes, but there are parameters that only apply for FIFO queue, those are:
@@ -108,3 +108,28 @@ There are some fields share between Standard and FIFO queue like queue name, bod
 
 
 * **sqs_delay_seconds:** Is the same as Standard queue, but you can set this parameter only on a queue level with Delivery delay in the section of configuration.
+
+# Testing
+
+¿Ready to test? Let's do it. We are going to use `awsmeter` to produce and publish messages in Standard queue and use AWS Management Console to receive the messages:
+
+1. Open JMeter test plan (present in this repository) in JMeter go to SQS Standard Queue Thread Group > SQS Producer.
+
+
+2. Fill the parameters to connect to AWS using **Access key id**, **Secret Access Key** and **Session Token**. If you have [credentials file](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) in you work area you just need to enter the name of the **profile** to get the access key id, secret access key and aws region from credentials and config file.
+
+
+3. Enter the name of the queue that you created. Update the message body and attributes for the values you want. Remember to use the AWS region where you created the queue.
+
+
+4. Execute SQS Standard Queue Thread.
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/awsmeter-sqs-producer-test.png)
+
+5. Go to AWS Management Console > Amazon SQS Queues, then Choose the queue you want to test and use the option `Send and receive message`.
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSAWSManagementConsole.png)
+
+5. Poll for messages.
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSPollingMessages.png)

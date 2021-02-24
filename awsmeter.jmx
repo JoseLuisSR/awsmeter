@@ -90,7 +90,7 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">10</stringProp>
+          <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
@@ -158,7 +158,7 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">10</stringProp>
+          <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
@@ -228,11 +228,6 @@
               <elementProp name="sqs_msg_deduplication_id" elementType="Argument">
                 <stringProp name="Argument.name">sqs_msg_deduplication_id</stringProp>
                 <stringProp name="Argument.value">${msg_deduplication_id}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="sqs_delay_seconds" elementType="Argument">
-                <stringProp name="Argument.name">sqs_delay_seconds</stringProp>
-                <stringProp name="Argument.value">0</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
