@@ -1,5 +1,7 @@
 # AWS Meter
 
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-kinesis-context-view.png)
+
 It is a JMeter plugin to execute tests over AWS services like Kinesis, SQS & SNS. This plugin has a set 
 of Java sampler per AWS service that are using AWS SDK to integrate with AWS and communicate with each service.
 
@@ -13,13 +15,13 @@ can help you understand capabilities, boundaries and components of each one.
 With `awsmeter` you can test the below aws services:
 
 * Kinesis Data Stream
-* SQS (Working in progress)
+* [SQS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sqs) 
 * SNS (Working in progress)
 
 # Install
 
 This project is using gradle to resolve dependencies and package the main compiled classes and resources 
-from src/main/resources into a single JAR. To build the .jar execute the command:
+from `src/main/resources` into a single JAR. To build the `.jar` execute the command:
 
     gradle uberJar
 
@@ -36,7 +38,7 @@ Gradle builds the `awsmeter-x.y.z.jar` in `/awsmeter/build/libs` to install `aws
 
 Before use `awsmeter` for the first time, complete the following task:
 
-* **AWS Account**: You need aws account to use his cloud compute services, it is free you only paid for 
+* **AWS Account**: You need aws account to use their cloud compute services, it is free you only paid for 
   the services used. [Steps to create and active new aws account](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/). 
   AWS has free tier for 12-months to use some products or services, more details [here](https://aws.amazon.com/free).
   You can use AWS products and services in different [regions](https://infrastructure.aws/) around the world, when sig-in you can choose the region you want.
@@ -120,8 +122,6 @@ Leave this parameter empty to use the aws region defined in config file in .aws 
 
 
 # Testing
-
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-kinesis-context-view.png)
 
 In this example we are going to publish a message in Kinesis stream using `awsmeter` then we are going to consume the message using aws cli, 
 the steps are:
