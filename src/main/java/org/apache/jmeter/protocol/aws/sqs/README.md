@@ -1,15 +1,19 @@
 # SQS 
 
+
+
 AWS SQS is service to interchange information between systems through messages and queues. Producer application publish messages in queue and consumer application listen the queue to get message and after processed delete it. This is a serverless service where AWS manages the availability, scalability and security (Shared Responsibility Model) of the queue.
+
+When you create a queue AWS cares to replicate the queue in the available zones of the region you selected to create the queue, also scale the queue to support the throughput you need and aprovision the infrastructure needed to deploy the queue. Less administrative tasks for you.
 
 Queues is a great middleware for integration between components decoupling the communication between them, producer doesn't know who and where is the consumer, and the consumer doesn't care where and who is the producer.
 
-There are two kinds of SQS queues:
+There are two kinds of [SQS queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html):
 
-* **Standard:** It is the default queue where you can publish the message in queue and AWS deliver it at least once, that's mean that is possible the message can repeat also AWS try to delivery the message in the same order were sent.
+* **Standard:** It is the default queue where you can publish the message in queue and AWS deliver it at least once, that's mean that is possible the message can repeat also AWS try to delivery the message in the same order were sent. The throughput for this queue is unlimited support many API calls per second.
   
 
-* **FIFO:** Messages are publishing in this queue and AWS guarantees deliver it only once and in the same order the message were sent.
+* **FIFO:** Messages are publishing in this queue and AWS guarantees deliver it only once and in the same order the message were sent. FIFO queues support up to 300 API calls per second and per method (Send, Receive, Delete), you can increase it using batching, for example sending 10 message in single API call.
 
 
 # Setting up
@@ -133,3 +137,28 @@ There are some fields share between Standard and FIFO queue like queue name, bod
 5. Poll for messages.
 
 ![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSPollingMessages.png)
+
+
+# CloudWatch Metrics
+
+SQS sends information to CloudWatch about the messages received, delivery, deleted and data of the queue state. CloudWatch generate metrics by queue in a period of time, we can use this information to  identify issues publishing or consuming messages. Let's analyze the below image:
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSCloudWatchMetrics.png)
+
+
+We can see three metrics in period of time of 5 minutes, the metrics are:
+
+* **NumberOfMessagesReceived:** The number of messages returned by calls to the ReceiveMessage action.
+
+
+* **NumberOfMessagesDeleted:** The number of messages deleted from the queue.
+
+
+* **NumberOfMessagesSent:** The number of messages added to a queue.
+
+
+We can analyze this information and validate the number of message deleted is close to number of message received to make sure the consumers are available to received, process and deleted the messages, and the number of messages sent is equals to received meaning all the message  published were processed. 
+
+This diagram show us the number of message sent grow from 03:05 to 03:15 and until the 03:25 the consumers start received and deleted these, so could be the consumers were unavailable to process message at this time. 
+
+There are other metrics, more information go to [Amazon SQS Metrics](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-available-cloudwatch-metrics.html).
