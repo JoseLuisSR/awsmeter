@@ -1,6 +1,6 @@
 # Kinesis Data Stream
 
-Kinesis Data Stream is one of the service to receive and delivery high volume of data from social networks, IoT devices, applications logs and other source of information where produce events streams and we need ingest to store and process at near real time. This service use publish and subscribre pattern where you can handle many producers publishing events stream in Kinesis and Kinesis delivery the events to consumer subscribed to stream.
+Kinesis Data Stream is one of the service to receive and delivery high volume of data from social networks, IoT devices, applications logs and other source of information where produce events streams and we need ingest all data at near real time. This service use publish and subscribre pattern where you can handle many producers publishing events stream in Kinesis and Kinesis delivery the events to consumer subscribed to stream.
 
 Kinesis Data Stream natively integrate with other AWS services like Lambda that subscribe to Kinesis stream, receive batch events and invoke Lambda function to process.
 
@@ -51,7 +51,7 @@ You can find JMeter Test Plan in this repository that was configured with Kinesi
 
 # Testing
 
-It's time to test. We are going to execute one single thread along 60 seconds for publishing data stream:
+It's time to test. We are going to execute one single thread along five minutes (300 seconds) for publishing data stream per second (1 TPS):
 
 1. Open JMeter test plan (present in this repository) in JMeter go to Kinesis Thread Group > Kinesis Producer.
 
@@ -59,18 +59,22 @@ It's time to test. We are going to execute one single thread along 60 seconds fo
 2. Fill the parameters to connect to AWS using **Access key id**, **Secret Access Key** and **Session Token**. If you have [credentials file](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) in you work area you just need to enter the name of the **profile** to get the access key id, secret access key and aws region from credentials and config file.
 
 
-3. Enter the name of Stream that you created. Update the data record with the values you want. Remember to use the AWS region where you created the queue.
+3. Enter the parameters described in **Getting Started** section.
 
 
-4. Execute Kinesis Thread.
+4. Execute Kinesis Thread. When it finished you can see details per record the time spent published data record in kinesis, the response data, also you can get metrics about the average of time, min and max time of the requests to Kinesis
 
 ![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/kinesis/awsmeter-kinesis-producer-test.png)
 
 
-5. Check the response to see the shard id where data record were published and sequence number.
+Now we are going to get the data records through [AWS CLI Kinesis Commands](https://docs.aws.amazon.com/cli/latest/reference/kinesis/index.html), follow the below steps: 
 
+5. Check the response of the first request to see the shard id where data record were published and sequence number.
 
-6. Get shard iterator through AWS CLI with the command:
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/kinesis/awsmeter-kinesis-producer-results-tree.png)
+
+6. Get shard iterator through AWS CLI. A shard iterator specifies the shard position from which to start reading data records sequentially. Use the command:
+
 ```
 aws kinesis get-shard-iterator --stream-name {name} --shard-id {id} --shard-iterator-type AT_SEQUENCE_NUMBER --starting-sequence-number {sequenceNumber}
 ```
@@ -84,3 +88,33 @@ aws kinesis get-records --shard-iterator {shardIterator}
 ```
 
 ![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/kinesis/aws-cli-kinesis-get-records.png)
+
+
+# CloudWatch Metrics
+
+Kinesis Data Stream send information to CloudWatch to monitoring the operations over kinesis like PutRecords, GetRecords, IncomingBytes and more, with this information CloudWatch generate metrics about the availability, scalability and performance of Kinesis under variant or specific load.
+
+The CloudWatch metrics of our test give us details about the number of data records published and delivered, let's see:
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/kinesis/kinesis-cloudwatch-metrics.png)
+
+* **IncomingRecords:** The number of records successfully put to the Kinesis stream over the specified time period. This metric includes record counts from PutRecord and PutRecords operations.
+
+
+* **PutRecord.Success:** The number of successful PutRecord operations per Kinesis stream, measured over the specified time period. Average reflects the percentage of successful writes to a stream. `awsmeter` just use putRecord function then is not necessary check PutRecords.Success metric.
+
+
+* **IncomingBytes:** The number of bytes successfully put to the Kinesis stream over the specified time period. This metric includes bytes from PutRecord and PutRecords operations.
+
+
+* **PutRecord.Bytes:** The number of bytes put to the Kinesis stream using the PutRecord operation over the specified time period. Average reflects the percentage of successful writes to a stream. `awsmeter` just use putRecord function then is not necessary check PutRecords.Bytes metric.
+
+
+You can use this information to double check the Shard estimator set up to put the right average record size and maximum records written per second when the peak of load changed or you are received new events from new information source. The CloudWatch metrics are very useful to analyze the 
+load behavior along the time and set up alerts, notifications and actions to scaling, please visit [ClodWatch Metrics Kinesis](https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html) for more details.
+
+
+# Kinesis Data Generator
+
+There is another option to do load test over Kinesis Data Stream that is [Kinesis Data Generator](https://awslabs.github.io/amazon-kinesis-data-generator/web/help.html). I have used and works very good, this solution need use your AWS account to build and deploy Kinesis Data Generator using 
+AWS services like Lambda, Cognito and IAM, those are preconfigured through Cloudformation template, so you need create Cloudformation stack also.
