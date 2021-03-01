@@ -64,7 +64,7 @@ public class KinesisProducerSampler extends AWSSampler {
                     getNewLogger().info("Parameter: " + k + ", value: " + credentials.get(k));
                 });
 
-        getNewLogger().info("Create Kinesis Producer");
+        getNewLogger().info("Create Kinesis Producer.");
         kinesisClient = (KinesisClient) createSdkClient(credentials);
     }
 
@@ -93,7 +93,8 @@ public class KinesisProducerSampler extends AWSSampler {
 
     @Override
     public void teardownTest(JavaSamplerContext context) {
-
+        getNewLogger().info("Close Kinesis Producer.");
+        kinesisClient.close();
     }
 
     public PutRecordRequest createPutRecordRequest(JavaSamplerContext context){

@@ -68,7 +68,8 @@ public abstract class SQSProducerSampler extends AWSSampler {
 
     @Override
     public void teardownTest(JavaSamplerContext context) {
-
+        getNewLogger().info("Close SQS Producer.");
+        sqsClient.close();
     }
 
     public Map<String, MessageAttributeValue> buildMessageAttributes(String msgAttributes) throws JsonProcessingException {

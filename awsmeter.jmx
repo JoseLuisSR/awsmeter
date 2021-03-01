@@ -17,12 +17,12 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <intProp name="LoopController.loops">-1</intProp>
+          <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">300</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
@@ -90,16 +90,16 @@
         </JavaSampler>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="SQS Standard Queue Thread Group" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="SQS Standard Queue Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <intProp name="LoopController.loops">-1</intProp>
+          <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">60</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
@@ -139,7 +139,7 @@
               </elementProp>
               <elementProp name="sqs_msg_body" elementType="Argument">
                 <stringProp name="Argument.name">sqs_msg_body</stringProp>
-                <stringProp name="Argument.value">{     &quot;message&quot;: &quot;Hello awsmeter JMeter plugin&quot; }</stringProp>
+                <stringProp name="Argument.value">{        &quot;tool&quot;: &quot;JMeter&quot;,     &quot;plugin&quot;: &quot;awsmeter&quot;,     &quot;service&quot;: &quot;SQS Standard Queue&quot;,     &quot;message&quot;: &quot;Hello awsmeter JMeter plugin&quot;,     &quot;time&quot;: &quot;${__time()}&quot; }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="sqs_msg_attributes" elementType="Argument">
@@ -158,7 +158,7 @@
         </JavaSampler>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="SQS FIFO Queue Thread Group" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="SQS FIFO Queue Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -216,7 +216,7 @@
               </elementProp>
               <elementProp name="sqs_msg_body" elementType="Argument">
                 <stringProp name="Argument.name">sqs_msg_body</stringProp>
-                <stringProp name="Argument.value">{     &quot;message&quot;: &quot;Hello awsmeter JMeter plugin&quot; }</stringProp>
+                <stringProp name="Argument.value">{        &quot;tool&quot;: &quot;JMeter&quot;,     &quot;plugin&quot;: &quot;awsmeter&quot;,     &quot;service&quot;: &quot;SQS FIFO Queue&quot;,     &quot;message&quot;: &quot;Hello awsmeter JMeter plugin&quot;,     &quot;time&quot;: &quot;${__time()}&quot; }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="sqs_msg_attributes" elementType="Argument">
