@@ -58,10 +58,13 @@ Before use `awsmeter` for the first time, complete the following task:
   to execute test for each service in the next sections.
   
 
-* **Credential file (optional)**: You need store the access key id and secret access key in a local file named 
+* **Credential and Config files (optional)**: You need store the access key id and secret access key in a local file named 
   credentials, in a folder named .aws in your home directory, also you can use AWS CLI to set up 
   credentials file. You can store multiple set of access key and secret access key using profiles and 
   specify the [AWS region](https://infrastructure.aws/) to connect. [Configure and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/credentials-file.png) 
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/config-file.png)
 
 
 * **AWS CLI (optional)**: AWS Command Line Interface (CLI) is a tool to communicate with AWS through 
@@ -76,8 +79,10 @@ Before use `awsmeter` for the first time, complete the following task:
 To start using `awsmeter` is necessary use JMeter, if you don't have experience working with JMeter you can see
 this [video tutorial for JMeter Beginners](https://youtube.com/playlist?list=PLhW3qG5bs-L-zox1h3eIL7CZh5zJmci4c).
 
-This project has an example JMeter Test Plan that were configured to execute tests over Kinesis Data Stream, 
-just open the file `awsmeter.jmx` in JMeter and fill the below java request parameters:
+This project has an example JMeter Test Plan that were configured to execute tests over [Kinesis Data Stream](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/kinesis), 
+[SQS Standard and FIFO Queue](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sqs), and more just open the file `awsmeter.jmx` in JMeter and fill the below java request parameters to connect to AWS Account:
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-parameters.png)
 
 * **aws_access_key_id**: When you create IAM user with programmatic access aws assign an access key id, use it value here.
   Leave this parameter empty if you want to get the access key id from credentials file in .aws folder in your home directory.
@@ -97,9 +102,28 @@ just open the file `awsmeter.jmx` in JMeter and fill the below java request para
 Leave this parameter empty to use the aws region defined in config file in .aws folder in yor home directory.
   
 
-* **aws_configure_profile**: When you use profile to group a collections of settings and credentials. When you have multiple 
-  aws accounts ([AWS Organization](https://aws.amazon.com/organizations/)) you can use profile to classify credentials for each AWS account. The main profile is 'default',
-  you can choose other that you have in credentials and config files.
-  
-  
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/KinesisProducesJavaRequest.png)
+* **aws_configure_profile**: Use profile to group a collections of settings and credentials. When you have multiple aws accounts ([AWS Organization](https://aws.amazon.com/organizations/)) 
+  you can use profile to classify credentials for each AWS account. The main profile is 'default', choose other that you have in credentials and config files.
+
+
+To know the parameters needed by AWS Service please go to:
+
+* [Kinesis Data Stream](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/kinesis)
+* [SQS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sqs)
+* SNS (Working in progress)
+
+
+# Design
+
+`awsmeter` was designed to extend his behaviour to other AWS services, if you want to use JMeter and Java Sampler Request to do test over others AWS Services you just need to extend the class `AWSSampler.java` and overwrite the methods to create SdkClient, define parameters, run and tear down the test.
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-class-diagram.png)
+
+Below you can see the class diagram with the details of the classes created for Kinesis Data Stream `KinesisProducerSampler.java` and SQS per queue type Standard `SQSProducerStandardQueue` and FIFO `SQSProducerFifoQueue`. Each class has his own logic to connect, produce events or messages and reuse the behaviour to record the test in JMeter and define the parameter to connect AWS account.
+
+`awsmeter` is implementing JavaSamplerClient interface to write our own implementation by AWS Service and can use JMeter to harness multiple threads, input parameter control, and data collection. Each Java Sampler defined is a protocol then we are following the JMeter package convention to define protocol per aws service:
+
+* **org.apache.jmeter.protocol.aws.kinesis**
+* **org.apache.jmeter.protocol.aws.sns**
+
+Please use this covention to create new Java Sampler Request for other AWS Service.
