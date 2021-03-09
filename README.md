@@ -34,6 +34,25 @@ Gradle builds the `awsmeter-x.y.z.jar` in `/awsmeter/build/libs` to install `aws
 
     $JMETER_HOME/lib/ext
 
+
+# JMeter Plugins
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/jmeter-plugins-logo.png)
+
+`awsmeter` is available in [JMeter Plugins](https://jmeter-plugins.org/), follow the below steps to install those:
+
+1. [Install JMeter Plugins](https://jmeter-plugins.org/install/Install/). Download `plugins-manager.jar` from https://jmeter-plugins.org/install/Install/ and put it into `lib/ext` directory in your local JMeter folder.
+
+
+2. Restart or open JMeter.
+
+
+3. Go to **Options > Plugins Manager** then in **Available Plugins** tab search `aws`, select it and press **Apply Changes and Restart JMeter** button.
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/jmeter-plugins-awsmeter.png)
+
+That's all, have fun using it.
+
 # Setting Up
 
 Before use `awsmeter` for the first time, complete the following task:
