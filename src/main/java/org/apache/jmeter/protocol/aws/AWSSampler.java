@@ -28,6 +28,10 @@ public abstract class AWSSampler implements JavaSamplerClient, AWSClient {
 
     public static final String FAIL_CODE = "500";
 
+    public static final String EMPTY = "";
+
+    public static final String EMPTY_ARRAY = "[]";
+
     private static final String ENCODING = "UTF-8";
 
     public static final List<Argument> AWS_PARAMETERS = Stream.of(

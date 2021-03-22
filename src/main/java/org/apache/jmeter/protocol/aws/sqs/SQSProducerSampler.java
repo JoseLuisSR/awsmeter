@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.jmeter.protocol.aws.AWSSampler;
+import org.apache.jmeter.protocol.aws.MessageAttribute;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.SdkClient;

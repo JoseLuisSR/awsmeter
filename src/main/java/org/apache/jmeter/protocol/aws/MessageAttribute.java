@@ -1,4 +1,4 @@
-package org.apache.jmeter.protocol.aws.sqs;
+package org.apache.jmeter.protocol.aws;
 
 public class MessageAttribute {
 
