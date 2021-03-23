@@ -1,16 +1,19 @@
 package org.apache.jmeter.protocol.aws;
 
+import com.amazonaws.client.builder.AwsSyncClientBuilder;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.samplers.SampleResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.core.SdkClient;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AWSSampler implements JavaSamplerClient, AWSClient {
+public abstract class AWSSampler implements JavaSamplerClient, AWSClientSDK2, AWSClientSDK1 {
 
     private static final Logger log = LoggerFactory.getLogger(AWSSampler.class);
 
@@ -32,15 +35,25 @@ public abstract class AWSSampler implements JavaSamplerClient, AWSClient {
 
     public static final String EMPTY_ARRAY = "[]";
 
-    private static final String ENCODING = "UTF-8";
+    public static final String ENCODING = "UTF-8";
 
     public static final List<Argument> AWS_PARAMETERS = Stream.of(
-            new Argument(AWS_ACCESS_KEY_ID, ""),
-            new Argument(AWS_SECRET_ACCESS_KEY, ""),
-            new Argument(AWS_SESSION_TOKEN, ""),
-            new Argument(AWS_REGION, ""),
+            new Argument(AWS_ACCESS_KEY_ID, EMPTY),
+            new Argument(AWS_SECRET_ACCESS_KEY, EMPTY),
+            new Argument(AWS_SESSION_TOKEN, EMPTY),
+            new Argument(AWS_REGION, EMPTY),
             new Argument(AWS_CONFIG_PROFILE, AWS_DEFAULT_PROFILE))
             .collect(Collectors.toList());
+
+    @Override
+    public SdkClient createSdkClient(Map<String, String> credentials) {
+        return null;
+    }
+
+    @Override
+    public AwsSyncClientBuilder createAWSClient(Map<String, String> credentials) {
+        return null;
+    }
 
     protected SampleResult newSampleResult(){
         SampleResult result = new SampleResult();

@@ -15,9 +15,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public interface AWSClient {
+public interface AWSClientSDK2 {
 
-    Logger log = LoggerFactory.getLogger(AWSClient.class);
+    Logger log = LoggerFactory.getLogger(AWSClientSDK2.class);
 
     SdkClient createSdkClient(Map<String, String> credentials);
 

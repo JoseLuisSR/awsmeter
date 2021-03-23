@@ -1,7 +1,6 @@
 package org.apache.jmeter.protocol.aws.sns;
 
-import com.amazonaws.auth.AWSCredentialsProviderChain;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.client.builder.AwsSyncClientBuilder;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClient;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
@@ -15,7 +14,6 @@ import org.apache.jmeter.protocol.aws.AWSSampler;
 import org.apache.jmeter.protocol.aws.MessageAttribute;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
-import software.amazon.awssdk.core.SdkClient;
 
 import com.amazonaws.services.sns.model.PublishRequest;
 
@@ -58,8 +56,10 @@ public class SNSProducerSampler extends AWSSampler {
     private AmazonSNS snsClient;
 
     @Override
-    public SdkClient createSdkClient(Map<String, String> credentials) {
-        return null;
+    public AwsSyncClientBuilder createAWSClient(Map<String, String> credentials) {
+        return AmazonSNSClient.builder()
+                .withCredentials(getAWSCredentials(credentials))
+                .withRegion(getAWSRegion(credentials));
     }
 
     @Override
@@ -83,13 +83,7 @@ public class SNSProducerSampler extends AWSSampler {
         });
 
         getNewLogger().info("Create SNS Publisher.");
-
-        DefaultAWSCredentialsProviderChain credentialsProviderChain = new DefaultAWSCredentialsProviderChain();
-        getNewLogger().info("access key  secret " + credentialsProviderChain.getCredentials().getAWSAccessKeyId() + " " + credentialsProviderChain.getCredentials().getAWSSecretKey());
-        snsClient = AmazonSNSClient.builder()
-                .withCredentials(new AWSCredentialsProviderChain(credentialsProviderChain))
-                .withRegion(context.getParameter(AWS_REGION))
-                .build();
+        snsClient = (AmazonSNS) createAWSClient(credentials).build();
     }
 
     @Override
