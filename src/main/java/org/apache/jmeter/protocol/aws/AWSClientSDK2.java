@@ -36,7 +36,25 @@ public interface AWSClientSDK2 {
 
     default AwsCredentialsProvider awsCredentialProvider(Map<String, String> credentials){
 
-        String accessKeyId = Optional.ofNullable(credentials.get(AWSSampler.AWS_ACCESS_KEY_ID))
+        return Optional.ofNullable(credentials.get(AWSSampler.AWS_SESSION_TOKEN))
+                .filter(Predicate.not(String::isEmpty))
+                .map( sessionToken -> buildAWSSessionCredentials(credentials, sessionToken))
+                .orElseGet(() -> buildAWSBasicCredentials(credentials));
+    }
+
+    default StaticCredentialsProvider buildAWSSessionCredentials(Map<String, String> credentials, String sessionToken){
+        return StaticCredentialsProvider.create(AwsSessionCredentials.create(getAWSAccessKeyIdSDK2(credentials),
+                getAWSSecretAccessKeySDK2(credentials),
+                sessionToken));
+    }
+
+    default StaticCredentialsProvider buildAWSBasicCredentials(Map<String, String> credentials){
+        return StaticCredentialsProvider.create(AwsBasicCredentials.create(getAWSAccessKeyIdSDK2(credentials),
+                getAWSSecretAccessKeySDK2(credentials)));
+    }
+
+    default String getAWSAccessKeyIdSDK2(Map<String, String> credentials){
+        return Optional.ofNullable(credentials.get(AWSSampler.AWS_ACCESS_KEY_ID))
                 .filter(Predicate.not(String::isEmpty))
                 .orElseGet(() ->{
                     log.info("Looking aws credentials access key id.");
@@ -45,9 +63,11 @@ public interface AWSClientSDK2 {
                             .build()
                             .resolveCredentials()
                             .accessKeyId();
-                    });
+                });
+    }
 
-        String secretAccessKey = Optional.ofNullable(credentials.get(AWSSampler.AWS_SECRET_ACCESS_KEY))
+    default String getAWSSecretAccessKeySDK2(Map<String, String> credentials){
+        return Optional.ofNullable(credentials.get(AWSSampler.AWS_SECRET_ACCESS_KEY))
                 .filter(Predicate.not(String::isEmpty))
                 .orElseGet(() ->{
                     log.info("Looking aws credentials secret access key.");
@@ -57,15 +77,6 @@ public interface AWSClientSDK2 {
                             .resolveCredentials()
                             .secretAccessKey();
                 });
-
-        Optional<String> sessionToken = Optional.ofNullable(credentials.get(AWSSampler.AWS_SESSION_TOKEN))
-                .filter(Predicate.not(String::isEmpty));
-
-        if( sessionToken.isPresent() )
-            return StaticCredentialsProvider.create(AwsSessionCredentials.create(accessKeyId, secretAccessKey, sessionToken.get()));
-        else
-            return StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKeyId, secretAccessKey));
-
     }
 
 }

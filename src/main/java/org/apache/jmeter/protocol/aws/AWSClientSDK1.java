@@ -44,18 +44,19 @@ public interface AWSClientSDK1 {
     }
 
     default AWSCredentialsProvider buildSessionAWSCredentials(Map<String, String> credentials, String sessionToken){
-
-        return new STSSessionCredentialsProvider(new BasicSessionCredentials(getAWSAccessKeyId(credentials),
-                getAWSSecretKey(credentials),
+        log.info("BasicSessionCredentials");
+        return new STSSessionCredentialsProvider(new BasicSessionCredentials(getAWSAccessKeyIdSDK1(credentials),
+                getAWSSecretAccessKeySDK1(credentials),
                 sessionToken));
     }
 
     default AWSCredentialsProvider buildBasicAWSCredentials(Map<String, String> credentials){
-        return new AWSStaticCredentialsProvider(new BasicAWSCredentials(getAWSAccessKeyId(credentials),
-                getAWSSecretKey(credentials)));
+        log.info("BasicAWSCredentials");
+        return new AWSStaticCredentialsProvider(new BasicAWSCredentials(getAWSAccessKeyIdSDK1(credentials),
+                getAWSSecretAccessKeySDK1(credentials)));
     }
 
-    default String getAWSAccessKeyId(Map<String, String> credentials){
+    default String getAWSAccessKeyIdSDK1(Map<String, String> credentials){
         return Optional.ofNullable(credentials.get(AWSSampler.AWS_ACCESS_KEY_ID))
                 .filter(Predicate.not(String::isEmpty))
                 .orElseGet(() -> {
@@ -68,7 +69,7 @@ public interface AWSClientSDK1 {
                 });
     }
 
-    default String getAWSSecretKey(Map<String, String> credentials){
+    default String getAWSSecretAccessKeySDK1(Map<String, String> credentials){
         return Optional.ofNullable(credentials.get(AWSSampler.AWS_SECRET_ACCESS_KEY))
                 .filter(Predicate.not(String::isEmpty))
                 .orElseGet(() -> {
