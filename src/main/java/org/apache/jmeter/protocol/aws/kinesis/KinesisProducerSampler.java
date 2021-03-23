@@ -7,6 +7,7 @@ import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.samplers.SampleResult;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.SdkClient;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.kinesis.model.KinesisException;
 import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
@@ -38,7 +39,7 @@ public class KinesisProducerSampler extends AWSSampler {
     @Override
     public SdkClient createSdkClient(Map<String, String> credentials) {
         return KinesisClient.builder()
-                .region(awsRegion(credentials))
+                .region(Region.of(getAWSRegion(credentials)))
                 .credentialsProvider(awsCredentialProvider(credentials))
                 .build();
     }

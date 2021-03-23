@@ -8,6 +8,7 @@ import org.apache.jmeter.protocol.aws.MessageAttribute;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.SdkClient;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
 
@@ -47,7 +48,7 @@ public abstract class SQSProducerSampler extends AWSSampler {
     @Override
     public SdkClient createSdkClient(Map<String, String> credentials) {
         return SqsClient.builder()
-                .region(awsRegion(credentials))
+                .region(Region.of(getAWSRegion(credentials)))
                 .credentialsProvider(awsCredentialProvider(credentials))
                 .build();
     }
