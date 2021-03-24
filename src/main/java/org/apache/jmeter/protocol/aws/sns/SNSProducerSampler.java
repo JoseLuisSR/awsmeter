@@ -5,18 +5,12 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClient;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
-import com.amazonaws.services.sns.model.PublishResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.jmeter.config.Argument;
-import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.aws.AWSSampler;
 import org.apache.jmeter.protocol.aws.MessageAttribute;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
-import org.apache.jmeter.samplers.SampleResult;
-
-import com.amazonaws.services.sns.model.PublishRequest;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -29,17 +23,21 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SNSProducerSampler extends AWSSampler {
+public abstract class SNSProducerSampler extends AWSSampler {
 
-    private static final String SNS_TOPIC_NAME = "sns_topic_name";
+    protected static final String SNS_TOPIC_ARN = "sns_topic_arn";
 
-    private static final String SNS_TOPIC_ARN = "sns_topic_arn";
+    protected static final String SNS_MSG_BODY = "sns_msg_body";
 
-    private static final String SNS_MSG_BODY = "sns_msg_body";
+    protected static final String SNS_MSG_ATTRIBUTES = "sns_msg_attributes";
 
-    private static final String SNS_MSG_ATTRIBUTES = "sns_msg_attributes";
+    protected static final String SNS_MSG_GROUP_ID = "sqs_msg_group_id";
+
+    protected static final String SNS_MSG_DEDUPLICATION_ID = "sqs_msg_deduplication_id";
 
     private static final String MSG_ATTRIBUTE_TYPE_STR = "String";
+
+    private static final String MSG_ATTRIBUTE_TYPE_STR_ARRAY = "String.Array";
 
     private static final String MSG_ATTRIBUTE_TYPE_NUM = "Number";
 
@@ -47,29 +45,13 @@ public class SNSProducerSampler extends AWSSampler {
 
     private static final Integer MSG_ATTRIBUTES_MAX = 10;
 
-    private static final List<Argument> SNS_PARAMETERS = Stream.of(
-            new Argument(SNS_TOPIC_NAME, EMPTY),
-            new Argument(SNS_MSG_BODY, EMPTY),
-            new Argument(SNS_TOPIC_ARN, EMPTY),
-            new Argument(SNS_MSG_ATTRIBUTES, EMPTY)
-    ).collect(Collectors.toList());
-
-    private AmazonSNS snsClient;
+    protected AmazonSNS snsClient;
 
     @Override
     public AwsSyncClientBuilder createAWSClient(Map<String, String> credentials) {
         return AmazonSNSClient.builder()
                 .withCredentials(getAWSCredentials(credentials))
                 .withRegion(Regions.fromName(getAWSRegion(credentials)));
-    }
-
-    @Override
-    public Arguments getDefaultParameters() {
-        Arguments defaultParameters = new Arguments();
-        defaultParameters.setArguments(Stream.of(AWS_PARAMETERS, SNS_PARAMETERS)
-                .flatMap(List::stream)
-                .collect(Collectors.toList()));
-        return defaultParameters;
     }
 
     @Override
@@ -88,71 +70,40 @@ public class SNSProducerSampler extends AWSSampler {
     }
 
     @Override
-    public SampleResult runTest(JavaSamplerContext context) {
-
-        SampleResult result = new SampleResult();
-        sampleResultStart(result, String.format("Topic Name: %s \nMsg Body: %s " +
-                        "\nMsg Attributes: %s \nSNS Topic Arn: %s",
-                context.getParameter(SNS_TOPIC_NAME),
-                context.getParameter(SNS_MSG_BODY),
-                context.getParameter(SNS_MSG_ATTRIBUTES),
-                context.getParameter(SNS_TOPIC_ARN)));
-
-        try {
-            getNewLogger().info("Publishing Event.");
-            PublishResult response = snsClient.publish(createPublishRequest(context));
-
-            sampleResultSuccess(result, String.format("Message id: %s \nSequence number: %s",
-                    response.getMessageId(),
-                    response.getSequenceNumber()));
-
-        } catch (JsonProcessingException exc) {
-            sampleResultFail(result, FAIL_CODE, exc.getMessage());
-        }
-
-        return result;
-    }
-
-    @Override
     public void teardownTest(JavaSamplerContext context) {
         getNewLogger().info("Close SNS Publisher.");
         snsClient.shutdown();
     }
 
-    public PublishRequest createPublishRequest(JavaSamplerContext context) throws JsonProcessingException {
+    public Map<String, MessageAttributeValue> buildMessageAttributes(final String msgAttributes) throws JsonProcessingException {
 
-        PublishRequest request = new PublishRequest();
-        return request
-                .withTopicArn(context.getParameter(SNS_TOPIC_ARN))
-                .withMessage(context.getParameter(SNS_MSG_BODY))
-                .withMessageAttributes(buildMessageAttributes(context.getParameter(SNS_MSG_ATTRIBUTES)));
-    }
-
-    public Map<String, MessageAttributeValue> buildMessageAttributes(String msgAttributes) throws JsonProcessingException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<MessageAttribute> msgAttributesList = objectMapper.readValue(
-                Optional.ofNullable(msgAttributes)
-                        .filter(Predicate.not(String::isEmpty))
-                        .orElseGet(() -> EMPTY_ARRAY),
-                new TypeReference<List<MessageAttribute>>() {}).stream()
-                .limit(MSG_ATTRIBUTES_MAX)
-                .collect(Collectors.toList());
+        List<MessageAttribute> msgAttributesList = readMsgAttributes(msgAttributes);
 
         return Stream.of(buildMsgAttributesStr(msgAttributesList),
+                buildMsgAttributesStrArray(msgAttributesList),
                 buildMsgAttributeNum(msgAttributesList),
                 buildMsgAttributesBin(msgAttributesList))
                 .flatMap( map -> map.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public Map<String, MessageAttributeValue> buildMsgAttributesStr(List<MessageAttribute> msgAttributes){
+    public List<MessageAttribute> readMsgAttributes(final String msgAttributes) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(Optional.ofNullable(msgAttributes)
+                        .filter(Predicate.not(String::isEmpty))
+                        .orElseGet(() -> EMPTY_ARRAY),
+                new TypeReference<List<MessageAttribute>>() {}).stream()
+                .limit(MSG_ATTRIBUTES_MAX)
+                .collect(Collectors.toList());
+    }
+
+    public Map<String, MessageAttributeValue> buildMsgAttributesStr(final List<MessageAttribute> msgAttributes){
         return msgAttributes.stream()
                 .filter(isStringDataType)
                 .collect(Collectors.toMap(MessageAttribute::getName, createStringAttribute));
     }
 
-    Predicate<MessageAttribute> isStringDataType = msg -> msg.getType().startsWith(MSG_ATTRIBUTE_TYPE_STR);
+    Predicate<MessageAttribute> isStringDataType = msg -> msg.getType().equals(MSG_ATTRIBUTE_TYPE_STR);
 
     Function<MessageAttribute, MessageAttributeValue> createStringAttribute = msg -> {
         MessageAttributeValue attributeValue = new MessageAttributeValue();
@@ -161,13 +112,28 @@ public class SNSProducerSampler extends AWSSampler {
                 .withStringValue(msg.getValue());
     };
 
-    public Map<String, MessageAttributeValue> buildMsgAttributeNum(List<MessageAttribute> msgAttributes){
+    public Map<String, MessageAttributeValue> buildMsgAttributesStrArray(final List<MessageAttribute> messageAttributes){
+        return messageAttributes.stream()
+                .filter(isStringArrayDataType)
+                .collect(Collectors.toMap(MessageAttribute::getName, createStringArrayAttribute));
+    }
+
+    Predicate<MessageAttribute> isStringArrayDataType = msg -> msg.getType().equals(MSG_ATTRIBUTE_TYPE_STR_ARRAY);
+
+    Function<MessageAttribute, MessageAttributeValue> createStringArrayAttribute = msg -> {
+        MessageAttributeValue attributeValue = new MessageAttributeValue();
+        return attributeValue
+                .withDataType(msg.getType())
+                .withStringValue(msg.getValue());
+    };
+
+    public Map<String, MessageAttributeValue> buildMsgAttributeNum(final List<MessageAttribute> msgAttributes){
         return msgAttributes.stream()
                 .filter(isNumberDataType)
                 .collect(Collectors.toMap(MessageAttribute::getName, createNumberAttribute));
     }
 
-    Predicate<MessageAttribute> isNumberDataType = msg -> msg.getType().startsWith(MSG_ATTRIBUTE_TYPE_NUM);
+    Predicate<MessageAttribute> isNumberDataType = msg -> msg.getType().equals(MSG_ATTRIBUTE_TYPE_NUM);
 
     Function<MessageAttribute, MessageAttributeValue> createNumberAttribute = msg -> {
         MessageAttributeValue attributeValue = new MessageAttributeValue();
@@ -176,13 +142,13 @@ public class SNSProducerSampler extends AWSSampler {
                 .withStringValue(msg.getValue());
     };
 
-    public Map<String, MessageAttributeValue> buildMsgAttributesBin(List<MessageAttribute> msgAttributes){
+    public Map<String, MessageAttributeValue> buildMsgAttributesBin(final List<MessageAttribute> msgAttributes){
         return msgAttributes.stream()
                 .filter(isBinaryDataType)
                 .collect(Collectors.toMap(MessageAttribute::getName, createBinaryAttribute));
     }
 
-    Predicate<MessageAttribute> isBinaryDataType = msg -> msg.getType().startsWith(MSG_ATTRIBUTE_TYPE_BIN);
+    Predicate<MessageAttribute> isBinaryDataType = msg -> msg.getType().equals(MSG_ATTRIBUTE_TYPE_BIN);
 
     Function<MessageAttribute, MessageAttributeValue> createBinaryAttribute = msg -> {
         MessageAttributeValue attributeValue = new MessageAttributeValue();
