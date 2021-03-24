@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="AWS Test Plan" enabled="true">
       <stringProp name="TestPlan.comments">JMeter Test Plan to execute test over aws services.</stringProp>
@@ -237,6 +237,151 @@
             </collectionProp>
           </elementProp>
           <stringProp name="classname">org.apache.jmeter.protocol.aws.sqs.SQSProducerFifoQueue</stringProp>
+        </JavaSampler>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="SNS Standard Topic Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Java Request" enabled="true">
+          <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="aws_access_key_id" elementType="Argument">
+                <stringProp name="Argument.name">aws_access_key_id</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_secret_access_key" elementType="Argument">
+                <stringProp name="Argument.name">aws_secret_access_key</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_session_token" elementType="Argument">
+                <stringProp name="Argument.name">aws_session_token</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_region" elementType="Argument">
+                <stringProp name="Argument.name">aws_region</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_configure_profile" elementType="Argument">
+                <stringProp name="Argument.name">aws_configure_profile</stringProp>
+                <stringProp name="Argument.value">default</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sns_topic_arn" elementType="Argument">
+                <stringProp name="Argument.name">sns_topic_arn</stringProp>
+                <stringProp name="Argument.value">arn:aws:sns:</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sns_msg_body" elementType="Argument">
+                <stringProp name="Argument.name">sns_msg_body</stringProp>
+                <stringProp name="Argument.value">{        &quot;tool&quot;: &quot;JMeter&quot;,     &quot;plugin&quot;: &quot;awsmeter&quot;,     &quot;service&quot;: &quot;SNS Standard Topic&quot;,     &quot;message&quot;: &quot;Hello awsmeter JMeter plugin&quot;,     &quot;time&quot;: &quot;${__time()}&quot; }</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sns_msg_attributes" elementType="Argument">
+                <stringProp name="Argument.name">sns_msg_attributes</stringProp>
+                <stringProp name="Argument.value">[     {         &quot;name&quot;: &quot;attribute-1&quot;,         &quot;type&quot;: &quot;String&quot;,         &quot;value&quot;: &quot;wholesale&quot;     },     {         &quot;name&quot;: &quot;attribute-2&quot;,         &quot;type&quot;: &quot;String&quot;,         &quot;value&quot;: &quot;retail&quot;     },     {         &quot;name&quot;: &quot;attribute-3&quot;,         &quot;type&quot;: &quot;String.Array&quot;,         &quot;value&quot;: &quot;wholesale,retail&quot;     },     {         &quot;name&quot;: &quot;attribute-4&quot;,         &quot;type&quot;: &quot;Number&quot;,         &quot;value&quot;: &quot;123&quot;     },     {         &quot;name&quot;: &quot;attribute-5&quot;,         &quot;type&quot;: &quot;Number&quot;,         &quot;value&quot;: &quot;456&quot;     },     {         &quot;name&quot;: &quot;attribute-6&quot;,         &quot;type&quot;: &quot;String.Array&quot;,         &quot;value&quot;: &quot;123,456&quot;     },     {         &quot;name&quot;: &quot;attribute-7&quot;,         &quot;type&quot;: &quot;Binary&quot;,         &quot;value&quot;: &quot;01101101 01100101 01110100 01100101 01110010&quot;     },     {         &quot;name&quot;: &quot;attribute-8&quot;,         &quot;type&quot;: &quot;Binary&quot;,         &quot;value&quot;: &quot;01101101 01100101 01110100 01100101 01110010&quot;     } ]</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="classname">org.apache.jmeter.protocol.aws.sns.SNSProducerStandardTopic</stringProp>
+        </JavaSampler>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="SNS FIFO Topic Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Deduplication Id" enabled="true">
+          <stringProp name="maximumValue">9999999999</stringProp>
+          <stringProp name="minimumValue">1000000000</stringProp>
+          <stringProp name="outputFormat">0000000000</stringProp>
+          <boolProp name="perThread">false</boolProp>
+          <stringProp name="randomSeed">${__time()}</stringProp>
+          <stringProp name="variableName">msg_deduplication_id</stringProp>
+        </RandomVariableConfig>
+        <hashTree/>
+        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Java Request" enabled="true">
+          <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="aws_access_key_id" elementType="Argument">
+                <stringProp name="Argument.name">aws_access_key_id</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_secret_access_key" elementType="Argument">
+                <stringProp name="Argument.name">aws_secret_access_key</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_session_token" elementType="Argument">
+                <stringProp name="Argument.name">aws_session_token</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_region" elementType="Argument">
+                <stringProp name="Argument.name">aws_region</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_configure_profile" elementType="Argument">
+                <stringProp name="Argument.name">aws_configure_profile</stringProp>
+                <stringProp name="Argument.value">default</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sns_topic_arn" elementType="Argument">
+                <stringProp name="Argument.name">sns_topic_arn</stringProp>
+                <stringProp name="Argument.value">arn:aws:sns:</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sns_msg_body" elementType="Argument">
+                <stringProp name="Argument.name">sns_msg_body</stringProp>
+                <stringProp name="Argument.value">{        &quot;tool&quot;: &quot;JMeter&quot;,     &quot;plugin&quot;: &quot;awsmeter&quot;,     &quot;service&quot;: &quot;SNS FIFO Topic&quot;,     &quot;message&quot;: &quot;Hello awsmeter JMeter plugin&quot;,     &quot;time&quot;: &quot;${__time()}&quot; }</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sns_msg_attributes" elementType="Argument">
+                <stringProp name="Argument.name">sns_msg_attributes</stringProp>
+                <stringProp name="Argument.value">[     {         &quot;name&quot;: &quot;attribute-1&quot;,         &quot;type&quot;: &quot;String&quot;,         &quot;value&quot;: &quot;wholesale&quot;     },     {         &quot;name&quot;: &quot;attribute-2&quot;,         &quot;type&quot;: &quot;String&quot;,         &quot;value&quot;: &quot;retail&quot;     },     {         &quot;name&quot;: &quot;attribute-3&quot;,         &quot;type&quot;: &quot;String.Array&quot;,         &quot;value&quot;: &quot;wholesale,retail&quot;     },     {         &quot;name&quot;: &quot;attribute-4&quot;,         &quot;type&quot;: &quot;Number&quot;,         &quot;value&quot;: &quot;123&quot;     },     {         &quot;name&quot;: &quot;attribute-5&quot;,         &quot;type&quot;: &quot;Number&quot;,         &quot;value&quot;: &quot;456&quot;     },     {         &quot;name&quot;: &quot;attribute-6&quot;,         &quot;type&quot;: &quot;String.Array&quot;,         &quot;value&quot;: &quot;123,456&quot;     },     {         &quot;name&quot;: &quot;attribute-7&quot;,         &quot;type&quot;: &quot;Binary&quot;,         &quot;value&quot;: &quot;01101101 01100101 01110100 01100101 01110010&quot;     },     {         &quot;name&quot;: &quot;attribute-8&quot;,         &quot;type&quot;: &quot;Binary&quot;,         &quot;value&quot;: &quot;01101101 01100101 01110100 01100101 01110010&quot;     } ]</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sqs_msg_group_id" elementType="Argument">
+                <stringProp name="Argument.name">sqs_msg_group_id</stringProp>
+                <stringProp name="Argument.value">main</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sqs_msg_deduplication_id" elementType="Argument">
+                <stringProp name="Argument.name">sqs_msg_deduplication_id</stringProp>
+                <stringProp name="Argument.value">${msg_deduplication_id}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="classname">org.apache.jmeter.protocol.aws.sns.SNSProducerFifoTopic</stringProp>
         </JavaSampler>
         <hashTree/>
       </hashTree>
