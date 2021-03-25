@@ -57,7 +57,8 @@ public class SQSProducerStandardQueue extends SQSProducerSampler{
         return result;
     }
 
-    public SendMessageRequest createSendMessageRequest(JavaSamplerContext context) throws JsonProcessingException {
+    @Override
+    public SendMessageRequest createSendMessageRequest(final JavaSamplerContext context) throws JsonProcessingException {
         return SendMessageRequest.builder()
                 .queueUrl(sqsClient.getQueueUrl(GetQueueUrlRequest.builder()
                         .queueName(context.getParameter(SQS_QUEUE_NAME))
@@ -68,5 +69,4 @@ public class SQSProducerStandardQueue extends SQSProducerSampler{
                 .delaySeconds(context.getIntParameter(SQS_DELAY_SECONDS))
                 .build();
     }
-
 }

@@ -61,6 +61,7 @@ public class SQSProducerFifoQueue extends SQSProducerSampler{
         return result;
     }
 
+    @Override
     public SendMessageRequest createSendMessageRequest(JavaSamplerContext context) throws JsonProcessingException {
         return SendMessageRequest.builder()
                 .queueUrl(sqsClient.getQueueUrl(GetQueueUrlRequest.builder()
@@ -73,5 +74,4 @@ public class SQSProducerFifoQueue extends SQSProducerSampler{
                 .messageDeduplicationId(context.getParameter(SQS_MSG_DEDUPLICATION_ID))
                 .build();
     }
-
 }

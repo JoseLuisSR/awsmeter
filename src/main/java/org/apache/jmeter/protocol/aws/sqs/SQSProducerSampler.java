@@ -11,6 +11,7 @@ import software.amazon.awssdk.core.SdkClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 import java.util.HashMap;
 import java.util.List;
@@ -74,16 +75,11 @@ public abstract class SQSProducerSampler extends AWSSampler {
         sqsClient.close();
     }
 
-    public Map<String, MessageAttributeValue> buildMessageAttributes(String msgAttributes) throws JsonProcessingException {
+    public abstract SendMessageRequest createSendMessageRequest(final JavaSamplerContext context) throws JsonProcessingException;
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<MessageAttribute> msgAttributesList = objectMapper.readValue(
-                Optional.ofNullable(msgAttributes)
-                        .filter(Predicate.not(String::isEmpty))
-                        .orElseGet(() -> "[]"),
-                new TypeReference<List<MessageAttribute>>() {}).stream()
-                .limit(MSG_ATTRIBUTES_MAX)
-                .collect(Collectors.toList());
+    public Map<String, MessageAttributeValue> buildMessageAttributes(final String msgAttributes) throws JsonProcessingException {
+
+        List<MessageAttribute> msgAttributesList = readMsgAttributes(msgAttributes);
 
         return Stream.of(buildMsgAttributesStr(msgAttributesList),
                 buildMsgAttributeNum(msgAttributesList),
@@ -92,7 +88,17 @@ public abstract class SQSProducerSampler extends AWSSampler {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public Map<String, MessageAttributeValue> buildMsgAttributesStr(List<MessageAttribute> msgAttributes){
+    public List<MessageAttribute> readMsgAttributes(final String msgAttributes) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(Optional.ofNullable(msgAttributes)
+                        .filter(Predicate.not(String::isEmpty))
+                        .orElseGet(() -> EMPTY_ARRAY),
+                new TypeReference<List<MessageAttribute>>() {}).stream()
+                .limit(MSG_ATTRIBUTES_MAX)
+                .collect(Collectors.toList());
+    }
+
+    public Map<String, MessageAttributeValue> buildMsgAttributesStr(final List<MessageAttribute> msgAttributes){
         return msgAttributes.stream()
                 .filter(isStringDataType)
                 .collect(Collectors.toMap(MessageAttribute::getName, createStringAttribute));
@@ -105,7 +111,7 @@ public abstract class SQSProducerSampler extends AWSSampler {
                 .stringValue(msg.getValue())
                 .build();
 
-    public Map<String, MessageAttributeValue> buildMsgAttributeNum(List<MessageAttribute> msgAttributes){
+    public Map<String, MessageAttributeValue> buildMsgAttributeNum(final List<MessageAttribute> msgAttributes){
         return msgAttributes.stream()
                 .filter(isNumberDataType)
                 .collect(Collectors.toMap(MessageAttribute::getName, createNumberAttribute));
@@ -118,7 +124,7 @@ public abstract class SQSProducerSampler extends AWSSampler {
             .stringValue(msg.getValue())
             .build();
 
-    public Map<String, MessageAttributeValue> buildMsgAttributesBin(List<MessageAttribute> msgAttributes){
+    public Map<String, MessageAttributeValue> buildMsgAttributesBin(final List<MessageAttribute> msgAttributes){
         return msgAttributes.stream()
                 .filter(isBinaryDataType)
                 .collect(Collectors.toMap(MessageAttribute::getName, createBinaryAttribute));
