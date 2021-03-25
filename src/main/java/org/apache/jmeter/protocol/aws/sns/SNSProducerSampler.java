@@ -41,8 +41,6 @@ public abstract class SNSProducerSampler extends AWSSampler {
 
     private static final String MSG_ATTRIBUTE_TYPE_BIN = "Binary";
 
-    private static final Integer MSG_ATTRIBUTES_MAX = 10;
-
     protected AmazonSNS snsClient;
 
     @Override
