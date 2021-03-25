@@ -16,7 +16,7 @@ With `awsmeter` you can test the below aws services:
 
 * [Kinesis Data Stream](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/kinesis)
 * [SQS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sqs) 
-* SNS (Working in progress)
+* [SNS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sns)
 
 # Install
 
@@ -47,7 +47,7 @@ Gradle builds the `awsmeter-x.y.z.jar` in `/awsmeter/build/libs` to install `aws
 2. Restart or open JMeter.
 
 
-3. Go to **Options > Plugins Manager** then in **Available Plugins** tab search `aws`, select it and press **Apply Changes and Restart JMeter** button.
+3. Go to **Options > Plugins Manager** then in **Available Plugins** tab search `aws`, select it and press **Apply Changes and Restart JMeter** button. `awsmeter` was build with Java 11, please execute JMeter with Java 11 to avoid issues.
 
 ![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/jmeter-plugins-awsmeter.png)
 
@@ -145,4 +145,13 @@ Below you can see the class diagram with the details of the classes created for 
 * **org.apache.jmeter.protocol.aws.kinesis**
 * **org.apache.jmeter.protocol.aws.sns**
 
-Please use this covention to create new Java Sampler Request for other AWS Service.
+Please use this convention to create new Java Sampler Request for other AWS Service.
+
+# Troubleshooting
+
+
+When you installed `awsmeter` using **jmeter-plugins** and executed JMeter with Java 8 or downwards, then probably you get the below exception:
+
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-compiled-issue.png)
+
+To fix it, please install Java 11 and execute JMeter with this version or install `awsmeter` following the steps described in the [Install](https://github.com/JoseLuisSR/awsmeter#install) section and execute JMeter with th version of Java you have (minimum 8). 
