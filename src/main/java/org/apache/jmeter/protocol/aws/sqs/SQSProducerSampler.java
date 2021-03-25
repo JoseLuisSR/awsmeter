@@ -1,8 +1,6 @@
 package org.apache.jmeter.protocol.aws.sqs;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.jmeter.protocol.aws.AWSSampler;
 import org.apache.jmeter.protocol.aws.MessageAttribute;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -16,7 +14,6 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -41,8 +38,6 @@ public abstract class SQSProducerSampler extends AWSSampler {
     private static final String MSG_ATTRIBUTE_TYPE_NUM = "Number";
 
     private static final String MSG_ATTRIBUTE_TYPE_BIN = "Binary";
-
-    private static final Integer MSG_ATTRIBUTES_MAX = 10;
 
     protected SqsClient sqsClient;
 
@@ -86,16 +81,6 @@ public abstract class SQSProducerSampler extends AWSSampler {
                 buildMsgAttributesBin(msgAttributesList))
                 .flatMap( map -> map.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    public List<MessageAttribute> readMsgAttributes(final String msgAttributes) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(Optional.ofNullable(msgAttributes)
-                        .filter(Predicate.not(String::isEmpty))
-                        .orElseGet(() -> EMPTY_ARRAY),
-                new TypeReference<List<MessageAttribute>>() {}).stream()
-                .limit(MSG_ATTRIBUTES_MAX)
-                .collect(Collectors.toList());
     }
 
     public Map<String, MessageAttributeValue> buildMsgAttributesStr(final List<MessageAttribute> msgAttributes){

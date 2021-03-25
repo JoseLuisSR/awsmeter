@@ -1,6 +1,9 @@
 package org.apache.jmeter.protocol.aws;
 
 import com.amazonaws.client.builder.AwsSyncClientBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.samplers.SampleResult;
@@ -10,6 +13,8 @@ import software.amazon.awssdk.core.SdkClient;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,6 +41,8 @@ public abstract class AWSSampler implements JavaSamplerClient, AWSClientSDK2, AW
     public static final String EMPTY_ARRAY = "[]";
 
     public static final String ENCODING = "UTF-8";
+
+    public static final Integer MSG_ATTRIBUTES_MAX = 10;
 
     public static final List<Argument> AWS_PARAMETERS = Stream.of(
             new Argument(AWS_ACCESS_KEY_ID, EMPTY),
@@ -83,6 +90,16 @@ public abstract class AWSSampler implements JavaSamplerClient, AWSClientSDK2, AW
 
     protected Logger getNewLogger() {
         return log;
+    }
+
+    protected List<MessageAttribute> readMsgAttributes(final String msgAttributes) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(Optional.ofNullable(msgAttributes)
+                        .filter(Predicate.not(String::isEmpty))
+                        .orElseGet(() -> EMPTY_ARRAY),
+                new TypeReference<List<MessageAttribute>>() {}).stream()
+                .limit(MSG_ATTRIBUTES_MAX)
+                .collect(Collectors.toList());
     }
 
 }
