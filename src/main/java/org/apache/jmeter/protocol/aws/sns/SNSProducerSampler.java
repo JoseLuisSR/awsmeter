@@ -5,6 +5,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClient;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
+import com.amazonaws.services.sns.model.PublishRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,6 +75,8 @@ public abstract class SNSProducerSampler extends AWSSampler {
         getNewLogger().info("Close SNS Publisher.");
         snsClient.shutdown();
     }
+
+    public abstract PublishRequest createPublishRequest(final JavaSamplerContext context) throws JsonProcessingException;
 
     public Map<String, MessageAttributeValue> buildMessageAttributes(final String msgAttributes) throws JsonProcessingException {
 

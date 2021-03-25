@@ -44,9 +44,8 @@ public class SNSProducerStandardTopic extends SNSProducerSampler {
             getNewLogger().info("Publishing Event.");
             PublishResult response = snsClient.publish(createPublishRequest(context));
 
-            sampleResultSuccess(result, String.format("Message id: %s \nSequence number: %s",
-                    response.getMessageId(),
-                    response.getSequenceNumber()));
+            sampleResultSuccess(result, String.format("Message id: %s",
+                    response.getMessageId()));
 
         } catch (AmazonSNSException e){
             sampleResultFail(result, e.getErrorCode(), e.getMessage());
@@ -57,7 +56,8 @@ public class SNSProducerStandardTopic extends SNSProducerSampler {
         return result;
     }
 
-    public PublishRequest createPublishRequest(JavaSamplerContext context) throws JsonProcessingException {
+    @Override
+    public PublishRequest createPublishRequest(final JavaSamplerContext context) throws JsonProcessingException {
 
         PublishRequest request = new PublishRequest();
         return request
@@ -65,5 +65,4 @@ public class SNSProducerStandardTopic extends SNSProducerSampler {
                 .withMessage(context.getParameter(SNS_MSG_BODY))
                 .withMessageAttributes(buildMessageAttributes(context.getParameter(SNS_MSG_ATTRIBUTES)));
     }
-
 }

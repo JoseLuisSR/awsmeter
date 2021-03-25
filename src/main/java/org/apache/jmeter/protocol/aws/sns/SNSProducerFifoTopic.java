@@ -62,7 +62,8 @@ public class SNSProducerFifoTopic extends SNSProducerSampler{
         return result;
     }
 
-    public PublishRequest createPublishRequest(JavaSamplerContext context) throws JsonProcessingException {
+    @Override
+    public PublishRequest createPublishRequest(final JavaSamplerContext context) throws JsonProcessingException {
 
         PublishRequest request = new PublishRequest();
         return request
