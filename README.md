@@ -65,11 +65,11 @@ Before use `awsmeter` for the first time, complete the following task:
 
 * **IAM user**: You need create new AWS IAM user with programmatic access to connect AWS service end-point 
   using an access key ID and secret access key. Good practice is create new user instead use user root 
-  because you can grant least privilege over the services for the new user. [Steps to create IAM User](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html).
+  because you can grant the least privilege over the services for the new user. [Steps to create IAM User](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html).
   
 
 * **IAM Group**: You need create an IAM Group to attach policies to multiple IAM Users. Groups let you specify 
-  permissions over the AWS services you need to access, remember grant least privilege.
+  permissions over the AWS services you need to access, remember grant the least privilege.
   
 
 * **IAM Policy**: Policy define the permissions for an action over AWS service that IAM Identity (User, 
@@ -134,15 +134,16 @@ To know the parameters needed by AWS Service please go to:
 
 # Design
 
-`awsmeter` was designed to extend his behaviour to other AWS services, if you want to use JMeter and Java Sampler Request to do test over others AWS Services you just need to extend the class `AWSSampler.java` and overwrite the methods to create SdkClient, define parameters, run and tear down the test.
+`awsmeter` was designed to extend his behaviour to other AWS services, if you want to use JMeter and Java Sampler Request to do test over others AWS Services you just need to extend the class `AWSSampler.java` and implements `AWSClientSDK1.java` or `AWSClientSDK2.java` depend on AWS SDK version you need use, overwrite the methods to create SdkClient, define parameters, run and tear down the test.
 
 ![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-class-diagram.png)
 
-Below you can see the class diagram with the details of the classes created for Kinesis Data Stream `KinesisProducerSampler.java` and SQS per queue type Standard `SQSProducerStandardQueue` and FIFO `SQSProducerFifoQueue`. Each class has his own logic to connect, produce events or messages and reuse the behaviour to record the test in JMeter and define the parameter to connect AWS account.
+Below you can see the class diagram with the details of the classes created for Kinesis Data Stream `KinesisProducerSampler.java`, SQS per queue type Standard `SQSProducerStandardQueue` and FIFO `SQSProducerFifoQueue`, and SNS per Topic type Standard `SNSProducerStandardTopic` and FIFO `SNSProducerFifoTopic`. Each class has his own logic to connect, produce events or messages and reuse the behaviour to record the test in JMeter and define the parameter to connect AWS account.
 
 `awsmeter` is implementing JavaSamplerClient interface to write our own implementation by AWS Service and can use JMeter to harness multiple threads, input parameter control, and data collection. Each Java Sampler defined is a protocol then we are following the JMeter package convention to define protocol per aws service:
 
 * **org.apache.jmeter.protocol.aws.kinesis**
+* **org.apache.jmeter.protocol.aws.sqs**
 * **org.apache.jmeter.protocol.aws.sns**
 
 Please use this convention to create new Java Sampler Request for other AWS Service.

@@ -7,6 +7,7 @@ import com.amazonaws.services.sns.AmazonSNSClient;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.jmeter.protocol.aws.AWSClientSDK1;
 import org.apache.jmeter.protocol.aws.AWSSampler;
 import org.apache.jmeter.protocol.aws.MessageAttribute;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -27,7 +28,7 @@ import java.util.stream.Stream;
  * @since 01/27/2021
  * @see "https://github.com/JoseLuisSR/awsmeter"
  */
-public abstract class SNSProducerSampler extends AWSSampler {
+public abstract class SNSProducerSampler extends AWSSampler implements AWSClientSDK1 {
 
     /**
      * SNS Topic ARN (Amazon Resource Name).
@@ -68,7 +69,7 @@ public abstract class SNSProducerSampler extends AWSSampler {
     @Override
     public AwsSyncClientBuilder createAWSClient(Map<String, String> credentials) {
         return AmazonSNSClient.builder()
-                .withCredentials(getAWSCredentials(credentials))
+                .withCredentials(getAWSCredentialsProvider(credentials))
                 .withRegion(Regions.fromName(getAWSRegion(credentials)));
     }
 

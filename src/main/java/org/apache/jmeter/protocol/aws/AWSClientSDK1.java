@@ -33,7 +33,7 @@ public interface AWSClientSDK1 extends AWSClient{
      *        Represents the input of JMeter Java Request parameters.
      * @return AWSCredentialsProvider result of create Basic Session Credentials or Basic Credentials.
      */
-    default AWSCredentialsProvider getAWSCredentials(Map<String, String> credentials){
+    default AWSCredentialsProvider getAWSCredentialsProvider(Map<String, String> credentials){
         return Optional.ofNullable(credentials.get(AWSSampler.AWS_SESSION_TOKEN))
                 .filter(Predicate.not(String::isEmpty))
                 .map( sessionToken -> buildSessionAWSCredentials(credentials, sessionToken))

@@ -1,6 +1,5 @@
 package org.apache.jmeter.protocol.aws;
 
-import com.amazonaws.client.builder.AwsSyncClientBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,10 +8,8 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.samplers.SampleResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.core.SdkClient;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -24,7 +21,7 @@ import java.util.stream.Stream;
  * @since 01/27/2021
  * @see "https://github.com/JoseLuisSR/awsmeter"
  */
-public abstract class AWSSampler implements JavaSamplerClient, AWSClientSDK2, AWSClientSDK1 {
+public abstract class AWSSampler implements JavaSamplerClient{
 
     /**
      * Log attribute.
@@ -116,16 +113,6 @@ public abstract class AWSSampler implements JavaSamplerClient, AWSClientSDK2, AW
             new Argument(AWS_REGION, EMPTY),
             new Argument(AWS_CONFIG_PROFILE, AWS_DEFAULT_PROFILE))
             .collect(Collectors.toList());
-
-    @Override
-    public SdkClient createSdkClient(Map<String, String> credentials) {
-        return null;
-    }
-
-    @Override
-    public AwsSyncClientBuilder createAWSClient(Map<String, String> credentials) {
-        return null;
-    }
 
     /**
      * Create new SampleResult.

@@ -1,6 +1,7 @@
 package org.apache.jmeter.protocol.aws.sqs;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.jmeter.protocol.aws.AWSClientSDK2;
 import org.apache.jmeter.protocol.aws.AWSSampler;
 import org.apache.jmeter.protocol.aws.MessageAttribute;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -25,7 +26,7 @@ import java.util.stream.Stream;
  * @since 01/27/2021
  * @see "https://github.com/JoseLuisSR/awsmeter"
  */
-public abstract class SQSProducerSampler extends AWSSampler {
+public abstract class SQSProducerSampler extends AWSSampler implements AWSClientSDK2 {
 
     /**
      * SQS Queue Name.
@@ -77,7 +78,7 @@ public abstract class SQSProducerSampler extends AWSSampler {
     public SdkClient createSdkClient(Map<String, String> credentials) {
         return SqsClient.builder()
                 .region(Region.of(getAWSRegion(credentials)))
-                .credentialsProvider(awsCredentialProvider(credentials))
+                .credentialsProvider(getAwsCredentialsProvider(credentials))
                 .build();
     }
 

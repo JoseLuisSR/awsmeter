@@ -1,6 +1,7 @@
 package org.apache.jmeter.protocol.aws.kinesis;
 
 import org.apache.jmeter.config.Argument;
+import org.apache.jmeter.protocol.aws.AWSClientSDK2;
 import org.apache.jmeter.protocol.aws.AWSSampler;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.config.Arguments;
@@ -25,7 +26,7 @@ import java.util.stream.Stream;
  * @since 01/27/2021
  * @see "https://github.com/JoseLuisSR/awsmeter"
  */
-public class KinesisProducerSampler extends AWSSampler {
+public class KinesisProducerSampler extends AWSSampler implements AWSClientSDK2 {
 
     /**
      * Kinesis Stream name.
@@ -66,7 +67,7 @@ public class KinesisProducerSampler extends AWSSampler {
     public SdkClient createSdkClient(Map<String, String> credentials) {
         return KinesisClient.builder()
                 .region(Region.of(getAWSRegion(credentials)))
-                .credentialsProvider(awsCredentialProvider(credentials))
+                .credentialsProvider(getAwsCredentialsProvider(credentials))
                 .build();
     }
 
