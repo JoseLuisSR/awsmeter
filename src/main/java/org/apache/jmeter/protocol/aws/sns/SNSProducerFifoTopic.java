@@ -67,7 +67,7 @@ public class SNSProducerFifoTopic extends SNSProducerSampler{
                 context.getParameter(SNS_MSG_DEDUPLICATION_ID)));
 
         try {
-            getNewLogger().info("Publishing Event.");
+            log.info("Publishing Event.");
             PublishResult response = snsClient.publish(createPublishRequest(context));
 
             sampleResultSuccess(result, String.format("Message id: %s \nSequence number: %s",

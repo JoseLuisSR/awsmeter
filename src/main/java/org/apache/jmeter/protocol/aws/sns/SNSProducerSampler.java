@@ -80,15 +80,15 @@ public abstract class SNSProducerSampler extends AWSSampler implements AWSClient
     @Override
     public void setupTest(JavaSamplerContext context) {
 
-        getNewLogger().info("Setup SNS Publisher Sampler.");
+        log.info("Setup SNS Publisher Sampler.");
         Map<String, String> credentials = new HashMap<>();
 
         context.getParameterNamesIterator().forEachRemaining( k -> {
             credentials.put(k, context.getParameter(k));
-            getNewLogger().info("Parameter: " + k + ", value: " + credentials.get(k));
+            log.info("Parameter: " + k + ", value: " + credentials.get(k));
         });
 
-        getNewLogger().info("Create SNS Publisher.");
+        log.info("Create SNS Publisher.");
         snsClient = (AmazonSNS) createAWSClient(credentials).build();
     }
 
@@ -99,7 +99,7 @@ public abstract class SNSProducerSampler extends AWSSampler implements AWSClient
      */
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        getNewLogger().info("Close SNS Publisher.");
+        log.info("Close SNS Publisher.");
         snsClient.shutdown();
     }
 

@@ -89,15 +89,16 @@ public abstract class SQSProducerSampler extends AWSSampler implements AWSClient
     @Override
     public void setupTest(JavaSamplerContext context) {
 
-        getNewLogger().info("Setup SQS Producer Sampler.");
+
+        log.info("Setup SQS Producer Sampler.");
         Map<String, String> credentials = new HashMap<>();
 
         context.getParameterNamesIterator().forEachRemaining( k -> {
             credentials.put(k, context.getParameter(k));
-            getNewLogger().info("Parameter: " + k + ", value: " + credentials.get(k));
+            log.info("Parameter: " + k + ", value: " + credentials.get(k));
         });
 
-        getNewLogger().info("Create SQS Producer.");
+        log.info("Create SQS Producer.");
         sqsClient = (SqsClient) createSdkClient(credentials);
     }
 
@@ -108,7 +109,7 @@ public abstract class SQSProducerSampler extends AWSSampler implements AWSClient
      */
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        getNewLogger().info("Close SQS Producer.");
+        log.info("Close SQS Producer.");
         sqsClient.close();
     }
 

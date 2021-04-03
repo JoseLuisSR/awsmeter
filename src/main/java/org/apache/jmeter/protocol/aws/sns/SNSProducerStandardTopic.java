@@ -62,7 +62,7 @@ public class SNSProducerStandardTopic extends SNSProducerSampler {
                 context.getParameter(SNS_MSG_ATTRIBUTES)));
 
         try {
-            getNewLogger().info("Publishing Event.");
+            log.info("Publishing Event.");
             PublishResult response = snsClient.publish(createPublishRequest(context));
 
             sampleResultSuccess(result, String.format("Message id: %s",

@@ -64,7 +64,7 @@ public class SQSProducerStandardQueue extends SQSProducerSampler{
                 context.getIntParameter(SQS_DELAY_SECONDS)));
 
         try{
-            getNewLogger().info("Put Message on Queue");
+            log.info("Put Message on Queue");
             SendMessageResponse msgRsp = sqsClient.sendMessage(createSendMessageRequest(context));
 
             sampleResultSuccess(result, String.format("Message id: %s",

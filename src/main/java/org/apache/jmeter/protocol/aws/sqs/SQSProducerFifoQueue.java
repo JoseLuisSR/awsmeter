@@ -67,7 +67,7 @@ public class SQSProducerFifoQueue extends SQSProducerSampler{
                 context.getParameter(SQS_MSG_DEDUPLICATION_ID)));
 
         try{
-            getNewLogger().info("Put Message on Queue");
+            log.info("Put Message on Queue");
             SendMessageResponse msgRsp = sqsClient.sendMessage(createSendMessageRequest(context));
 
             sampleResultSuccess(result, String.format("Message id: %s \nSequence Number: %s",

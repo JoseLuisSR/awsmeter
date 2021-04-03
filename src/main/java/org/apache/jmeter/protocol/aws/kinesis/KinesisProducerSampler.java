@@ -92,16 +92,16 @@ public class KinesisProducerSampler extends AWSSampler implements AWSClientSDK2 
     @Override
     public void setupTest(JavaSamplerContext context) {
 
-        getNewLogger().info("Setup Kinesis Producer Sampler.");
+        log.info("Setup Kinesis Producer Sampler.");
         Map<String, String> credentials = new HashMap<>();
 
         context.getParameterNamesIterator()
                 .forEachRemaining( k -> {
                     credentials.put(k, context.getParameter(k));
-                    getNewLogger().info("Parameter: " + k + ", value: " + credentials.get(k));
+                    log.info("Parameter: " + k + ", value: " + credentials.get(k));
                 });
 
-        getNewLogger().info("Create Kinesis Producer.");
+        log.info("Create Kinesis Producer.");
         kinesisClient = (KinesisClient) createSdkClient(credentials);
     }
 
@@ -122,7 +122,7 @@ public class KinesisProducerSampler extends AWSSampler implements AWSClientSDK2 
                 context.getParameter(KINESIS_DATA_RECORD)));
 
         try {
-            getNewLogger().info("Publishing Data Record.");
+            log.info("Publishing Data Record.");
             PutRecordResponse response = kinesisClient.putRecord(createPutRecordRequest(context));
             sampleResultSuccess(result,String.format("Shard id: %s \nSequence Number: %s \nEncryption Type: %s",
                     response.shardId(),
@@ -142,7 +142,7 @@ public class KinesisProducerSampler extends AWSSampler implements AWSClientSDK2 
      */
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        getNewLogger().info("Close Kinesis Producer.");
+        log.info("Close Kinesis Producer.");
         kinesisClient.close();
     }
 

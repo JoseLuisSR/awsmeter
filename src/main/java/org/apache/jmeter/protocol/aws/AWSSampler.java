@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.samplers.SampleResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,65 +21,61 @@ import java.util.stream.Stream;
  */
 public abstract class AWSSampler implements JavaSamplerClient{
 
-    /**
-     * Log attribute.
-     */
-    private static final Logger log = LoggerFactory.getLogger(AWSSampler.class);
 
     /**
      * IAM user with programmatic access, access key id.
      */
-    public static final String AWS_ACCESS_KEY_ID = "aws_access_key_id";
+    protected static final String AWS_ACCESS_KEY_ID = "aws_access_key_id";
 
     /**
      * IAM user with programmatic access, secret access key.
      */
-    public static final String AWS_SECRET_ACCESS_KEY = "aws_secret_access_key";
+    protected static final String AWS_SECRET_ACCESS_KEY = "aws_secret_access_key";
 
     /**
      * IAM user with programmatic access, session token.
      */
-    public static final String AWS_SESSION_TOKEN = "aws_session_token";
+    protected static final String AWS_SESSION_TOKEN = "aws_session_token";
 
     /**
      * AWS region, https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions
      */
-    public static final String AWS_REGION = "aws_region";
+    protected static final String AWS_REGION = "aws_region";
 
     /**
      * AWS CLI profile. A named profile is a collection of settings and credentials store in your machine.
      */
-    public static final String AWS_CONFIG_PROFILE = "aws_configure_profile";
+    protected static final String AWS_CONFIG_PROFILE = "aws_configure_profile";
 
     /**
      * Default AWS CLI profile.
      */
-    public static final String AWS_DEFAULT_PROFILE = "default";
+    protected static final String AWS_DEFAULT_PROFILE = "default";
 
     /**
      * Fail code.
      */
-    public static final String FAIL_CODE = "500";
+    protected static final String FAIL_CODE = "500";
 
     /**
      * Empty String.
      */
-    public static final String EMPTY = "";
+    protected static final String EMPTY = "";
 
     /**
      * Empty array.
      */
-    public static final String EMPTY_ARRAY = "[]";
+    protected static final String EMPTY_ARRAY = "[]";
 
     /**
      * Encoding.
      */
-    public static final String ENCODING = "UTF-8";
+    protected static final String ENCODING = "UTF-8";
 
     /**
-     * SQS and SNS maximum message attributes constant.
+     * SQS and SNS maximum message attributes.
      */
-    public static final Integer MSG_ATTRIBUTES_MAX = 10;
+    protected static final Integer MSG_ATTRIBUTES_MAX = 10;
 
     /**
      * Message Attribute String type.
@@ -106,7 +100,7 @@ public abstract class AWSSampler implements JavaSamplerClient{
     /**
      * Set AWS Parameters needed to access API.
      */
-    public static final List<Argument> AWS_PARAMETERS = Stream.of(
+    protected static final List<Argument> AWS_PARAMETERS = Stream.of(
             new Argument(AWS_ACCESS_KEY_ID, EMPTY),
             new Argument(AWS_SECRET_ACCESS_KEY, EMPTY),
             new Argument(AWS_SESSION_TOKEN, EMPTY),
@@ -174,14 +168,6 @@ public abstract class AWSSampler implements JavaSamplerClient{
         result.setSuccessful(false);
         result.setResponseCode(code);
         result.setResponseData(response, ENCODING);
-    }
-
-    /**
-     * Get log attribute.
-     * @return log.
-     */
-    protected Logger getNewLogger() {
-        return log;
     }
 
     /**
