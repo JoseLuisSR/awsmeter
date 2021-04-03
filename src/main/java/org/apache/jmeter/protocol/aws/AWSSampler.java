@@ -87,6 +87,26 @@ public abstract class AWSSampler implements JavaSamplerClient, AWSClientSDK2, AW
     public static final Integer MSG_ATTRIBUTES_MAX = 10;
 
     /**
+     * Message Attribute String type.
+     */
+    protected static final String MSG_ATTRIBUTE_TYPE_STR = "String";
+
+    /**
+     * Message Attribute String Array type.
+     */
+    protected static final String MSG_ATTRIBUTE_TYPE_STR_ARRAY = "String.Array";
+
+    /**
+     * Message Attribute Number type.
+     */
+    protected static final String MSG_ATTRIBUTE_TYPE_NUM = "Number";
+
+    /**
+     * Message Attribute Binary type.
+     */
+    protected static final String MSG_ATTRIBUTE_TYPE_BIN = "Binary";
+
+    /**
      * Set AWS Parameters needed to access API.
      */
     public static final List<Argument> AWS_PARAMETERS = Stream.of(
@@ -183,6 +203,7 @@ public abstract class AWSSampler implements JavaSamplerClient, AWSClientSDK2, AW
      *        Messages attributes in JSON format.
      * @return Message attributes list.
      * @throws JsonProcessingException
+     *         Exception when deserialize JSON to Object.
      */
     protected List<MessageAttribute> readMsgAttributes(final String msgAttributes) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();

@@ -63,21 +63,6 @@ public abstract class SQSProducerSampler extends AWSSampler {
     protected static final String SQS_MSG_DEDUPLICATION_ID = "sqs_msg_deduplication_id";
 
     /**
-     * Message Attribute String type.
-     */
-    private static final String MSG_ATTRIBUTE_TYPE_STR = "String";
-
-    /**
-     * Message Attribute Number type.
-     */
-    private static final String MSG_ATTRIBUTE_TYPE_NUM = "Number";
-
-    /**
-     * Message Attribute Binary type.
-     */
-    private static final String MSG_ATTRIBUTE_TYPE_BIN = "Binary";
-
-    /**
      * AWS SQS Client
      */
     protected SqsClient sqsClient;

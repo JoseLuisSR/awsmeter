@@ -55,26 +55,6 @@ public abstract class SNSProducerSampler extends AWSSampler {
     protected static final String SNS_MSG_DEDUPLICATION_ID = "sqs_msg_deduplication_id";
 
     /**
-     * Message Attribute String type.
-     */
-    private static final String MSG_ATTRIBUTE_TYPE_STR = "String";
-
-    /**
-     * Message Attribute String Array type.
-     */
-    private static final String MSG_ATTRIBUTE_TYPE_STR_ARRAY = "String.Array";
-
-    /**
-     * Message Attribute Number type.
-     */
-    private static final String MSG_ATTRIBUTE_TYPE_NUM = "Number";
-
-    /**
-     * Message Attribute Binary type.
-     */
-    private static final String MSG_ATTRIBUTE_TYPE_BIN = "Binary";
-
-    /**
      * AWS SNS Client.
      */
     protected AmazonSNS snsClient;
