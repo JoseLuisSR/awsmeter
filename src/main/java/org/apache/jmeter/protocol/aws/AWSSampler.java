@@ -18,32 +18,77 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * AWS Sampler class that implements JavaSamplerClient class to create custom Java Request Sampler per AWS Service.
+ * @author JoseLuisSR
+ * @since 01/27/2021
+ * @see "https://github.com/JoseLuisSR/awsmeter"
+ */
 public abstract class AWSSampler implements JavaSamplerClient, AWSClientSDK2, AWSClientSDK1 {
 
+    /**
+     * Log attribute.
+     */
     private static final Logger log = LoggerFactory.getLogger(AWSSampler.class);
 
+    /**
+     * IAM user with programmatic access, access key id.
+     */
     public static final String AWS_ACCESS_KEY_ID = "aws_access_key_id";
 
+    /**
+     * IAM user with programmatic access, secret access key.
+     */
     public static final String AWS_SECRET_ACCESS_KEY = "aws_secret_access_key";
 
+    /**
+     * IAM user with programmatic access, session token.
+     */
     public static final String AWS_SESSION_TOKEN = "aws_session_token";
 
+    /**
+     * AWS region, https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions
+     */
     public static final String AWS_REGION = "aws_region";
 
+    /**
+     * AWS CLI profile. A named profile is a collection of settings and credentials store in your machine.
+     */
     public static final String AWS_CONFIG_PROFILE = "aws_configure_profile";
 
+    /**
+     * Default AWS CLI profile.
+     */
     public static final String AWS_DEFAULT_PROFILE = "default";
 
+    /**
+     * Fail code.
+     */
     public static final String FAIL_CODE = "500";
 
+    /**
+     * Empty String.
+     */
     public static final String EMPTY = "";
 
+    /**
+     * Empty array.
+     */
     public static final String EMPTY_ARRAY = "[]";
 
+    /**
+     * Encoding.
+     */
     public static final String ENCODING = "UTF-8";
 
+    /**
+     * SQS and SNS maximum message attributes constant.
+     */
     public static final Integer MSG_ATTRIBUTES_MAX = 10;
 
+    /**
+     * Set AWS Parameters needed to access API.
+     */
     public static final List<Argument> AWS_PARAMETERS = Stream.of(
             new Argument(AWS_ACCESS_KEY_ID, EMPTY),
             new Argument(AWS_SECRET_ACCESS_KEY, EMPTY),
@@ -62,6 +107,11 @@ public abstract class AWSSampler implements JavaSamplerClient, AWSClientSDK2, AW
         return null;
     }
 
+    /**
+     * Create new SampleResult.
+     * @return SampleResult, captures data such as whether the test was successful,
+     * the response code and message, any request or response data and the test start/end times
+     */
     protected SampleResult newSampleResult(){
         SampleResult result = new SampleResult();
         result.setDataEncoding(ENCODING);
@@ -69,11 +119,30 @@ public abstract class AWSSampler implements JavaSamplerClient, AWSClientSDK2, AW
         return result;
     }
 
+    /**
+     * Start the sample request and set the <code>samplerData</code> to the requestData.
+     * @param result
+     *        SampleResult mutable object to update status.
+     * @param data
+     *        The request to set as <code>samplerData</code>.
+     */
     protected void sampleResultStart(SampleResult result, String data){
         result.setSamplerData(data);
         result.sampleStart();
     }
 
+    /**
+     * Set the sample result as <code>sampleEnd()</code>,
+     * <code>setSuccessful(true)</code>, <code>setResponseCode("OK")</code> and if
+     * the response is not <code>null</code> then
+     * <code>setResponseData(response.toString(), ENCODING)</code> otherwise it is
+     * marked as not requiring a response.
+     *
+     * @param result
+     *        SampleResult mutable object to change.
+     * @param response
+     *        The successful result message, may be null.
+     */
     protected void sampleResultSuccess(SampleResult result, String response){
         result.sampleEnd();
         result.setSuccessful(true);
@@ -81,6 +150,18 @@ public abstract class AWSSampler implements JavaSamplerClient, AWSClientSDK2, AW
         result.setResponseData(response, ENCODING);
     }
 
+    /**
+     * Mark the sample result as <code>sampleEnd</code>,
+     * <code>setSuccessful(false)</code> and the <code>setResponseCode</code> to
+     * reason.
+     *
+     * @param result
+     *        SampleResult mutable object to change.
+     * @param code
+     *        The failure code.
+     * @param response
+     *        The failure reason.
+     */
     protected void sampleResultFail(SampleResult result, String code, String response) {
         result.sampleEnd();
         result.setSuccessful(false);
@@ -88,10 +169,21 @@ public abstract class AWSSampler implements JavaSamplerClient, AWSClientSDK2, AW
         result.setResponseData(response, ENCODING);
     }
 
+    /**
+     * Get log attribute.
+     * @return log.
+     */
     protected Logger getNewLogger() {
         return log;
     }
 
+    /**
+     * Read message attributes and deserialize from JSON to Objects.
+     * @param msgAttributes
+     *        Messages attributes in JSON format.
+     * @return Message attributes list.
+     * @throws JsonProcessingException
+     */
     protected List<MessageAttribute> readMsgAttributes(final String msgAttributes) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(Optional.ofNullable(msgAttributes)

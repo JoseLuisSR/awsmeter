@@ -13,14 +13,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * SNS Producer Sampler class to connect and publish messages on SNS Standard topic.
+ * @author JoseLuisSR
+ * @since 01/27/2021
+ * @see "https://github.com/JoseLuisSR/awsmeter"
+ */
 public class SNSProducerStandardTopic extends SNSProducerSampler {
 
+    /**
+     * List of Arguments to SNS Standard Topic.
+     */
     private static final List<Argument> SNS_PARAMETERS = Stream.of(
             new Argument(SNS_TOPIC_ARN, EMPTY),
             new Argument(SNS_MSG_BODY, EMPTY),
             new Argument(SNS_MSG_ATTRIBUTES, EMPTY)
     ).collect(Collectors.toList());
 
+    /**
+     * Initial values for test parameter. They are show in Java Request test sampler.
+     * AWS parameters and SNS parameters.
+     * @return Arguments to set as default on Java Request.
+     */
     @Override
     public Arguments getDefaultParameters() {
         Arguments defaultParameters = new Arguments();
@@ -30,6 +44,13 @@ public class SNSProducerStandardTopic extends SNSProducerSampler {
         return defaultParameters;
     }
 
+    /**
+     * Main method to execute the test on single thread. Create Message and publish it on SNS Standard Topic.
+     * @param context
+     *        Arguments values on Java Sampler.
+     * @return SampleResult, captures data such as whether the test was successful,
+     * the response code and message, any request or response data, and the test start/end times
+     */
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
 
@@ -56,6 +77,14 @@ public class SNSProducerStandardTopic extends SNSProducerSampler {
         return result;
     }
 
+    /**
+     * Create request to publish message on SNS Standard Topic.
+     * @param context
+     *        Arguments values on Java Sampler.
+     * @return PublishRequest with message attributes like body and attributes.
+     * @throws JsonProcessingException
+     *         Exception when deserialize JSON to Object.
+     */
     @Override
     public PublishRequest createPublishRequest(final JavaSamplerContext context) throws JsonProcessingException {
 
