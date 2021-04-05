@@ -57,7 +57,7 @@ The fields of each Java Request Sampler per SNS topic type are:
 
 ## Standard
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SNSStandardProducerJavaSampler.png)
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sns/SNSStandardProducerJavaSampler.png)
 
 * **sns_topic_arn:** Amazon Resource Name (arn) of the Topic, you can find it in Details section of the Topic.
 
@@ -99,7 +99,7 @@ The fields of each Java Request Sampler per SNS topic type are:
 ## FIFO
 
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SNSFIFOProducerJavaSampler.png)
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sns/SNSFIFOProducerJavaSampler.png)
 
 
 There are some fields share between Standard and FIFO topic like topic arn, message body and message attributes, but there are parameters that only apply for FIFO queue, those are:
@@ -139,13 +139,13 @@ We are going publish messages in FIFO topic and subscribe a FIFO queue to it top
 
 Add access policy.
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSAccessPolicy.png)
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sns/SQSAccessPolicy.png)
 
 3. Subscribe SQS FIFO queue to SNS FIFO topic. Go to your FIFO topic and select Create subscription option, then choose the protocol (only Amazon SQS is available to guarantee the message order) and input the SQS FIFO queue ARN. Enable raw message delivery send the message without Message Group id, If you want sends the message in order please don't check it option. 
    
    You can set up [Subscription filter policy](https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html) to receive messages with specific attributes. When you configure the message filtering, SNS FIFO topics support at-most-once delivery, as messages can be filtered out based on your subscription filter policies.
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SNSFIFOTopicSubscription.png)
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sns/SNSFIFOTopicSubscription.png)
 
 
 Now we can start execute test.
@@ -161,7 +161,7 @@ Now we can start execute test.
 
 7. Execute SNS FIFO Topic Thread Group.
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/awsmeter-sns-fifo-topic-producer-test.png)
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sns/awsmeter-sns-fifo-topic-producer-test.png)
 
 
 8. Go to AWS Management Console > Amazon SQS Queues, then Choose the FIFO queue subscribed to SNS FIFO Topic.
@@ -169,14 +169,15 @@ Now we can start execute test.
 
 9. Poll for messages.
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSFIFOQueuePollingMessages.png)
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/
+/SQSFIFOQueuePollingMessages.png)
 
 
 # CloudWatch Metrics
 
 SNS sends information to CloudWatch about the messages published, number of messages delivery successful and failed, size of the messages published and more. CloudWatch generate metrics by dimensions like Topic Metrics in a period of time, we can use this information to identify issues publishing or delivery messages. Let's analyze the below image:
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SNSCloudWatchMetrics.png)
+![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sns/SNSCloudWatchMetrics.png)
 
 
 We can see two metrics in period of time of 1 minute, the metrics are:
