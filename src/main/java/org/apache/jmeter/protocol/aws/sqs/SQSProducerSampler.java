@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.jmeter.protocol.aws.AWSClientSDK2;
 import org.apache.jmeter.protocol.aws.AWSSampler;
 import org.apache.jmeter.protocol.aws.MessageAttribute;
+import org.apache.jmeter.protocol.aws.kinesis.KinesisProducerSampler;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.SdkClient;
 import software.amazon.awssdk.regions.Region;
@@ -27,6 +30,11 @@ import java.util.stream.Stream;
  * @see "https://github.com/JoseLuisSR/awsmeter"
  */
 public abstract class SQSProducerSampler extends AWSSampler implements AWSClientSDK2 {
+
+    /**
+     * Log attribute.
+     */
+    protected static Logger log = LoggerFactory.getLogger(SQSProducerSampler.class);
 
     /**
      * SQS Queue Name.

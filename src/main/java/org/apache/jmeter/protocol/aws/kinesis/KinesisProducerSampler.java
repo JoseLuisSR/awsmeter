@@ -3,9 +3,12 @@ package org.apache.jmeter.protocol.aws.kinesis;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.protocol.aws.AWSClientSDK2;
 import org.apache.jmeter.protocol.aws.AWSSampler;
+import org.apache.jmeter.protocol.aws.sns.SNSProducerSampler;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.samplers.SampleResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.SdkClient;
 import software.amazon.awssdk.regions.Region;
@@ -27,6 +30,11 @@ import java.util.stream.Stream;
  * @see "https://github.com/JoseLuisSR/awsmeter"
  */
 public class KinesisProducerSampler extends AWSSampler implements AWSClientSDK2 {
+
+    /**
+     * Log attribute.
+     */
+    protected static Logger log = LoggerFactory.getLogger(KinesisProducerSampler.class);
 
     /**
      * Kinesis Stream name.

@@ -7,10 +7,13 @@ import com.amazonaws.services.sns.AmazonSNSClient;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.jmeter.protocol.aws.AWSClient;
 import org.apache.jmeter.protocol.aws.AWSClientSDK1;
 import org.apache.jmeter.protocol.aws.AWSSampler;
 import org.apache.jmeter.protocol.aws.MessageAttribute;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +34,11 @@ import java.util.stream.Stream;
 public abstract class SNSProducerSampler extends AWSSampler implements AWSClientSDK1 {
 
     /**
+     * Log attribute.
+     */
+    protected static Logger log = LoggerFactory.getLogger(SNSProducerSampler.class);
+
+    /**
      * SNS Topic ARN (Amazon Resource Name).
      */
     protected static final String SNS_TOPIC_ARN = "sns_topic_arn";
@@ -48,12 +56,12 @@ public abstract class SNSProducerSampler extends AWSSampler implements AWSClient
     /**
      * Message Group Id (FIFO Topic). All messages belong to same group id are delivered FIFO order (First-In-First-Out).
      */
-    protected static final String SNS_MSG_GROUP_ID = "sqs_msg_group_id";
+    protected static final String SNS_MSG_GROUP_ID = "sns_msg_group_id";
 
     /**
      * Message Deduplication Id (FIFO Topic). To avoid repeat messages.
      */
-    protected static final String SNS_MSG_DEDUPLICATION_ID = "sqs_msg_deduplication_id";
+    protected static final String SNS_MSG_DEDUPLICATION_ID = "sns_msg_deduplication_id";
 
     /**
      * AWS SNS Client.

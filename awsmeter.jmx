@@ -13,7 +13,7 @@
     </TestPlan>
     <hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Kinesis Thread Group" enabled="true">
-        <stringProp name="TestPlan.comments">Thread group to execute load testing ovwe aws kinesis data stream.</stringProp>
+        <stringProp name="TestPlan.comments">Thread group to execute load testing over aws kinesis data stream.</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -71,7 +71,7 @@
               </elementProp>
               <elementProp name="kinesis_stream_name" elementType="Argument">
                 <stringProp name="Argument.name">kinesis_stream_name</stringProp>
-                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.value">client-stream</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="partition_key" elementType="Argument">
@@ -102,6 +102,7 @@
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="TestPlan.comments">Thread group to execute load testing over aws sqs standard queue.</stringProp>
       </ThreadGroup>
       <hashTree>
         <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="SQS Standard Queue Producer" enabled="true">
@@ -134,7 +135,7 @@
               </elementProp>
               <elementProp name="sqs_queue_name" elementType="Argument">
                 <stringProp name="Argument.name">sqs_queue_name</stringProp>
-                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.value">customer-request</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="sqs_msg_body" elementType="Argument">
@@ -170,6 +171,7 @@
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="TestPlan.comments">Thread group to execute load testing over aws sqs fifo queue.</stringProp>
       </ThreadGroup>
       <hashTree>
         <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Deduplication Id" enabled="true">
@@ -211,7 +213,7 @@
               </elementProp>
               <elementProp name="sqs_queue_name" elementType="Argument">
                 <stringProp name="Argument.name">sqs_queue_name</stringProp>
-                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.value">client-request.fifo</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="sqs_msg_body" elementType="Argument">
@@ -252,6 +254,7 @@
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="TestPlan.comments">Thread group to execute load testing over aws sns standard topic.</stringProp>
       </ThreadGroup>
       <hashTree>
         <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="SNS Standard Topic Producer" enabled="true">
@@ -284,7 +287,7 @@
               </elementProp>
               <elementProp name="sns_topic_arn" elementType="Argument">
                 <stringProp name="Argument.name">sns_topic_arn</stringProp>
-                <stringProp name="Argument.value">arn:aws:sns:</stringProp>
+                <stringProp name="Argument.value">arn:aws:sns:us-east-2:688514412000:customer-topic</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="sns_msg_body" elementType="Argument">
@@ -307,14 +310,15 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <intProp name="LoopController.loops">-1</intProp>
+          <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">6</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">10</stringProp>
-        <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">60</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
-        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="TestPlan.comments">Thread group to execute load testing over aws sns fifo topic.</stringProp>
       </ThreadGroup>
       <hashTree>
         <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Deduplication Id" enabled="true">
@@ -356,7 +360,7 @@
               </elementProp>
               <elementProp name="sns_topic_arn" elementType="Argument">
                 <stringProp name="Argument.name">sns_topic_arn</stringProp>
-                <stringProp name="Argument.value">arn:aws:sns:</stringProp>
+                <stringProp name="Argument.value">arn:aws:sns:us-east-2:688514412000:customer-topic.fifo</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="sns_msg_body" elementType="Argument">
@@ -369,14 +373,14 @@
                 <stringProp name="Argument.value">[     {         &quot;name&quot;: &quot;attribute-1&quot;,         &quot;type&quot;: &quot;String&quot;,         &quot;value&quot;: &quot;wholesale&quot;     },     {         &quot;name&quot;: &quot;attribute-2&quot;,         &quot;type&quot;: &quot;String&quot;,         &quot;value&quot;: &quot;retail&quot;     },     {         &quot;name&quot;: &quot;attribute-3&quot;,         &quot;type&quot;: &quot;String.Array&quot;,         &quot;value&quot;: &quot;wholesale,retail&quot;     },     {         &quot;name&quot;: &quot;attribute-4&quot;,         &quot;type&quot;: &quot;Number&quot;,         &quot;value&quot;: &quot;123&quot;     },     {         &quot;name&quot;: &quot;attribute-5&quot;,         &quot;type&quot;: &quot;Number&quot;,         &quot;value&quot;: &quot;456&quot;     },     {         &quot;name&quot;: &quot;attribute-6&quot;,         &quot;type&quot;: &quot;String.Array&quot;,         &quot;value&quot;: &quot;123,456&quot;     },     {         &quot;name&quot;: &quot;attribute-7&quot;,         &quot;type&quot;: &quot;Binary&quot;,         &quot;value&quot;: &quot;01101101 01100101 01110100 01100101 01110010&quot;     },     {         &quot;name&quot;: &quot;attribute-8&quot;,         &quot;type&quot;: &quot;Binary&quot;,         &quot;value&quot;: &quot;01101101 01100101 01110100 01100101 01110010&quot;     } ]</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
-              <elementProp name="sqs_msg_group_id" elementType="Argument">
-                <stringProp name="Argument.name">sqs_msg_group_id</stringProp>
+              <elementProp name="sns_msg_group_id" elementType="Argument">
+                <stringProp name="Argument.name">sns_msg_group_id</stringProp>
                 <stringProp name="Argument.value">main</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
-              <elementProp name="sqs_msg_deduplication_id" elementType="Argument">
-                <stringProp name="Argument.name">sqs_msg_deduplication_id</stringProp>
-                <stringProp name="Argument.value">${msg_deduplication_id}</stringProp>
+              <elementProp name="sns_msg_deduplication_id" elementType="Argument">
+                <stringProp name="Argument.name">sns_msg_deduplication_id</stringProp>
+                <stringProp name="Argument.value">${msg_deduplication_id</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
