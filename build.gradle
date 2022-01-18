@@ -33,6 +33,7 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-sns'
     implementation 'com.amazonaws:aws-java-sdk-sts'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.12.1'
+    implementation 'org.json:json:20211205'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
