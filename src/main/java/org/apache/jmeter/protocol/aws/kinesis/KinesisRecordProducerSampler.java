@@ -158,7 +158,7 @@ public class KinesisRecordProducerSampler extends AWSSampler implements AWSClien
      * Create PutRecordsRequest with stream name, partition key and data.
      * @param context
      *        Arguments values on Java Sampler.
-     * @return PutRecordRequest
+     * @return PutRecordsRequest
      */
     public PutRecordsRequest createPutRecordRequest(JavaSamplerContext context) {
         String tempPayload = context.getParameter(KINESIS_DATA_RECORD);
@@ -167,8 +167,6 @@ public class KinesisRecordProducerSampler extends AWSSampler implements AWSClien
         PutRecordsRequest putRecordsRequest = null;
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
-                log.info("json node:"+i);
-                log.info(jsonArray.get(i).toString());
                 putRecordsRequestEntryList.add(PutRecordsRequestEntry.builder()
                         .data(SdkBytes.fromByteArray(String.valueOf(jsonArray.get(i)).getBytes(StandardCharsets.UTF_8)))
                         .partitionKey(context.getParameter(KINESIS_PARTITION_KEY) + "-" + i).build());
