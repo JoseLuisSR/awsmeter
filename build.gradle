@@ -43,6 +43,8 @@ test {
 
 task uberJar(type: Jar) {
 
+    duplicatesStrategy = 'include'
+
     from sourceSets.main.output
 
     dependsOn configurations.runtimeClasspath
