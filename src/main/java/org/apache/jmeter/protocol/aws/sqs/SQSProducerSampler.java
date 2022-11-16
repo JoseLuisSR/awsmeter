@@ -18,6 +18,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -118,7 +119,8 @@ public abstract class SQSProducerSampler extends AWSSampler implements AWSClient
     @Override
     public void teardownTest(JavaSamplerContext context) {
         log.info("Close SQS Producer.");
-        sqsClient.close();
+        Optional.ofNullable(sqsClient)
+                .ifPresent(client -> client.close());
     }
 
     /**
