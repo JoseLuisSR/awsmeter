@@ -7,7 +7,6 @@ import com.amazonaws.services.sns.AmazonSNSClient;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.apache.jmeter.protocol.aws.AWSClient;
 import org.apache.jmeter.protocol.aws.AWSClientSDK1;
 import org.apache.jmeter.protocol.aws.AWSSampler;
 import org.apache.jmeter.protocol.aws.MessageAttribute;
@@ -20,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -108,7 +108,8 @@ public abstract class SNSProducerSampler extends AWSSampler implements AWSClient
     @Override
     public void teardownTest(JavaSamplerContext context) {
         log.info("Close SNS Publisher.");
-        snsClient.shutdown();
+        Optional.ofNullable(snsClient)
+                .ifPresent(client -> client.shutdown());
     }
 
     /**
