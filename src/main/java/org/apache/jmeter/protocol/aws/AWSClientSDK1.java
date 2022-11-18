@@ -4,7 +4,6 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.STSSessionCredentialsProvider;
 import com.amazonaws.client.builder.AwsSyncClientBuilder;
 
 import java.util.Map;
@@ -51,7 +50,7 @@ public interface AWSClientSDK1 extends AWSClient{
      */
     default AWSCredentialsProvider buildSessionAWSCredentials(Map<String, String> credentials, String sessionToken){
 
-        return new STSSessionCredentialsProvider(new BasicSessionCredentials(getAWSAccessKeyId(credentials),
+        return new AWSStaticCredentialsProvider(new BasicSessionCredentials(getAWSAccessKeyId(credentials),
                 getAWSSecretAccessKey(credentials),
                 sessionToken));
     }
