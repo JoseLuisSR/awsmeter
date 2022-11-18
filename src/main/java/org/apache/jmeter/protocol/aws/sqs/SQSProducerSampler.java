@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.jmeter.protocol.aws.AWSClientSDK2;
 import org.apache.jmeter.protocol.aws.AWSSampler;
 import org.apache.jmeter.protocol.aws.MessageAttribute;
-import org.apache.jmeter.protocol.aws.kinesis.KinesisProducerSampler;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +17,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -118,7 +118,8 @@ public abstract class SQSProducerSampler extends AWSSampler implements AWSClient
     @Override
     public void teardownTest(JavaSamplerContext context) {
         log.info("Close SQS Producer.");
-        sqsClient.close();
+        Optional.ofNullable(sqsClient)
+                .ifPresent(client -> client.close());
     }
 
     /**

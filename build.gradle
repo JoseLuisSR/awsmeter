@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'org.apache.jmeter.protocol.aws'
-version '2.0.0'
+version '2.1.1'
 
 repositories {
     mavenCentral()
@@ -42,6 +42,8 @@ test {
 }
 
 task uberJar(type: Jar) {
+
+    duplicatesStrategy = 'include'
 
     from sourceSets.main.output
 

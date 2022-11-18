@@ -4,7 +4,6 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.STSSessionCredentialsProvider;
 import com.amazonaws.client.builder.AwsSyncClientBuilder;
 
 import java.util.Map;
@@ -34,10 +33,11 @@ public interface AWSClientSDK1 extends AWSClient{
      * @return AWSCredentialsProvider result of create Basic Session Credentials or Basic Credentials.
      */
     default AWSCredentialsProvider getAWSCredentialsProvider(Map<String, String> credentials){
-        return Optional.ofNullable(credentials.get(AWSSampler.AWS_SESSION_TOKEN))
+
+        return Optional.ofNullable(getAWSSessionToken(credentials))
                 .filter(Predicate.not(String::isEmpty))
-                .map( sessionToken -> buildSessionAWSCredentials(credentials, sessionToken))
-                .orElseGet( () -> buildBasicAWSCredentials(credentials));
+                .map(sessionToken -> buildSessionAWSCredentials(credentials, sessionToken))
+                .orElseGet(() -> buildBasicAWSCredentials(credentials));
     }
 
     /**
@@ -49,7 +49,8 @@ public interface AWSClientSDK1 extends AWSClient{
      * @return AWSCredentialsProvider object created with access key, secret access key and session token.
      */
     default AWSCredentialsProvider buildSessionAWSCredentials(Map<String, String> credentials, String sessionToken){
-        return new STSSessionCredentialsProvider(new BasicSessionCredentials(getAWSAccessKeyId(credentials),
+
+        return new AWSStaticCredentialsProvider(new BasicSessionCredentials(getAWSAccessKeyId(credentials),
                 getAWSSecretAccessKey(credentials),
                 sessionToken));
     }
@@ -61,6 +62,7 @@ public interface AWSClientSDK1 extends AWSClient{
      * @return AWSCredentialsProvider object created with access key, secret access key
      */
     default AWSCredentialsProvider buildBasicAWSCredentials(Map<String, String> credentials){
+
         return new AWSStaticCredentialsProvider(new BasicAWSCredentials(getAWSAccessKeyId(credentials),
                 getAWSSecretAccessKey(credentials)));
     }

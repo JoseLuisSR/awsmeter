@@ -33,10 +33,11 @@ public interface AWSClientSDK2 extends AWSClient{
      * @return AWSCredentialsProvider result of create Basic Session Credentials or Basic Credentials.
      */
     default AwsCredentialsProvider getAwsCredentialsProvider(Map<String, String> credentials){
-        return Optional.ofNullable(credentials.get(AWSSampler.AWS_SESSION_TOKEN))
+
+        return Optional.ofNullable(getAWSSessionToken(credentials))
                 .filter(Predicate.not(String::isEmpty))
-                .map( sessionToken -> buildAWSSessionCredentials(credentials, sessionToken))
-                .orElseGet(() -> buildAWSBasicCredentials(credentials));
+                .map(sessionToken -> buildAWSSessionCredentials(credentials, sessionToken))
+                .orElse(buildAWSBasicCredentials(credentials));
     }
 
     /**
@@ -48,6 +49,7 @@ public interface AWSClientSDK2 extends AWSClient{
      * @return AWSCredentialsProvider object created with access key, secret access key and session token.
      */
     default StaticCredentialsProvider buildAWSSessionCredentials(Map<String, String> credentials, String sessionToken){
+
         return StaticCredentialsProvider.create(AwsSessionCredentials.create(getAWSAccessKeyId(credentials),
                 getAWSSecretAccessKey(credentials),
                 sessionToken));
@@ -60,6 +62,7 @@ public interface AWSClientSDK2 extends AWSClient{
      * @return AWSCredentialsProvider object created with access key, secret access key
      */
     default StaticCredentialsProvider buildAWSBasicCredentials(Map<String, String> credentials){
+
         return StaticCredentialsProvider.create(AwsBasicCredentials.create(getAWSAccessKeyId(credentials),
                 getAWSSecretAccessKey(credentials)));
     }
