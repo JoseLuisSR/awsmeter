@@ -3,7 +3,6 @@ package org.apache.jmeter.protocol.aws.kinesis;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.protocol.aws.AWSClientSDK2;
 import org.apache.jmeter.protocol.aws.AWSSampler;
-import org.apache.jmeter.protocol.aws.sns.SNSProducerSampler;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.samplers.SampleResult;
@@ -20,6 +19,7 @@ import software.amazon.awssdk.services.kinesis.model.PutRecordResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -151,7 +151,8 @@ public class KinesisProducerSampler extends AWSSampler implements AWSClientSDK2 
     @Override
     public void teardownTest(JavaSamplerContext context) {
         log.info("Close Kinesis Producer.");
-        kinesisClient.close();
+        Optional.ofNullable(kinesisClient)
+                .ifPresent(client -> client.close());
     }
 
     /**

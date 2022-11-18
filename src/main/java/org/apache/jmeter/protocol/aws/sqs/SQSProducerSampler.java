@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.jmeter.protocol.aws.AWSClientSDK2;
 import org.apache.jmeter.protocol.aws.AWSSampler;
 import org.apache.jmeter.protocol.aws.MessageAttribute;
-import org.apache.jmeter.protocol.aws.kinesis.KinesisProducerSampler;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
