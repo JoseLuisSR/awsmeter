@@ -9,8 +9,6 @@ import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordRequest;
@@ -76,16 +74,12 @@ public class CognitoProducerAdminCreateUser extends CognitoProducerSampler {
         } catch (CognitoIdentityProviderException exc){
             log.error("Unable to create user " + context.getParameter(COGNITO_USER_USERNAME), exc);
             sampleResultFail(result, exc.awsErrorDetails().errorCode(), exc.awsErrorDetails().errorMessage());
-        } catch (JsonProcessingException exc) {
-            log.error("Unable to create user " + context.getParameter(COGNITO_USER_USERNAME), exc);
-            sampleResultFail(result, FAIL_CODE, exc.getMessage());
         }
 
         return result;
     }
     
-    protected AdminCreateUserRequest createAdminCreateUserRequest(JavaSamplerContext context) 
-            throws JsonProcessingException {
+    protected AdminCreateUserRequest createAdminCreateUserRequest(JavaSamplerContext context) {
         AttributeType attributeType = AttributeType.builder()
                 .name("email")
                 .value(context.getParameter(COGNITO_USER_EMAIL))
@@ -99,8 +93,7 @@ public class CognitoProducerAdminCreateUser extends CognitoProducerSampler {
                 .build();
     }
     
-    protected AdminSetUserPasswordRequest createAdminSetUserPasswordRequest(JavaSamplerContext context) 
-            throws JsonProcessingException {
+    protected AdminSetUserPasswordRequest createAdminSetUserPasswordRequest(JavaSamplerContext context) {
         return AdminSetUserPasswordRequest.builder()
                 .userPoolId(context.getParameter(COGNITO_USER_POOL_ID))
                 .username(context.getParameter(COGNITO_USER_USERNAME))
