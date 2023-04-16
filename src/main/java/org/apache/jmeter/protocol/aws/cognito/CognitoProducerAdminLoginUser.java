@@ -15,8 +15,6 @@ import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
@@ -97,9 +95,6 @@ public class CognitoProducerAdminLoginUser extends CognitoProducerSampler {
         } catch (CognitoIdentityProviderException exc){
             log.error("Unable to login user " + context.getParameter(COGNITO_USER_USERNAME), exc);
             sampleResultFail(result, exc.awsErrorDetails().errorCode(), exc.awsErrorDetails().errorMessage());
-        } catch (JsonProcessingException exc) {
-            log.error("Unable to login user " + context.getParameter(COGNITO_USER_USERNAME), exc);
-            sampleResultFail(result, FAIL_CODE, exc.getMessage());
         } catch (GeneralSecurityException exc) {
             log.error("Unable to login user " + context.getParameter(COGNITO_USER_USERNAME), exc);
             sampleResultFail(result, FAIL_CODE, exc.getMessage());
@@ -109,7 +104,7 @@ public class CognitoProducerAdminLoginUser extends CognitoProducerSampler {
     }
     
     protected AdminInitiateAuthRequest createAdminInitiateAuthRequest(JavaSamplerContext context) 
-            throws JsonProcessingException, GeneralSecurityException {
+            throws GeneralSecurityException {
         Map<String,String> authParameters = new HashMap<>();
         authParameters.put("USERNAME", context.getParameter(COGNITO_USER_USERNAME));
         authParameters.put("PASSWORD", context.getParameter(COGNITO_USER_PASSWORD));
