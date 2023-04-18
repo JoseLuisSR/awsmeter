@@ -30,6 +30,7 @@ dependencies {
     implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.971')
     implementation 'software.amazon.awssdk:kinesis'
     implementation 'software.amazon.awssdk:sqs'
+    implementation 'software.amazon.awssdk:cognitoidentityprovider'
     implementation 'com.amazonaws:aws-java-sdk-sns'
     implementation 'com.amazonaws:aws-java-sdk-sts'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.12.1'

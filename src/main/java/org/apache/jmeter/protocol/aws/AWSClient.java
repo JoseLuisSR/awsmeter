@@ -31,7 +31,7 @@ public interface AWSClient {
 
         return Optional.ofNullable(credentials.get(AWSSampler.AWS_REGION))
                 .filter(Predicate.not(String::isEmpty))
-                .orElse(getDefaultAwsRegionProviderChain.apply(credentials)
+                .orElseGet(() -> getDefaultAwsRegionProviderChain.apply(credentials)
                         .getRegion()
                         .toString());
     }
@@ -46,7 +46,7 @@ public interface AWSClient {
 
         return Optional.ofNullable(credentials.get(AWSSampler.AWS_ACCESS_KEY_ID))
                 .filter(Predicate.not(String::isEmpty))
-                .orElse(getProfileCredentialsProvider.apply(credentials)
+                .orElseGet(() -> getProfileCredentialsProvider.apply(credentials)
                         .resolveCredentials()
                         .accessKeyId());
     }
@@ -61,7 +61,7 @@ public interface AWSClient {
 
         return Optional.ofNullable(credentials.get(AWSSampler.AWS_SECRET_ACCESS_KEY))
                 .filter(Predicate.not(String::isEmpty))
-                .orElse(getProfileCredentialsProvider.apply(credentials)
+                .orElseGet(() -> getProfileCredentialsProvider.apply(credentials)
                         .resolveCredentials()
                         .secretAccessKey());
     }
@@ -76,9 +76,15 @@ public interface AWSClient {
 
         return Optional.ofNullable(credentials.get(AWSSampler.AWS_SESSION_TOKEN))
                 .filter(Predicate.not(String::isEmpty))
-                .orElseGet(() ->((AwsSessionCredentials)getProfileCredentialsProvider.apply(credentials)
-                        .resolveCredentials())
-                        .sessionToken());
+                .orElseGet(() -> {
+                    try {
+                        return ((AwsSessionCredentials)getProfileCredentialsProvider.apply(credentials)
+                                .resolveCredentials())
+                                .sessionToken();
+                    } catch (Exception e) {
+                        return null;
+                    }
+                });
     }
 
     /**
