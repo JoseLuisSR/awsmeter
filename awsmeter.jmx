@@ -389,6 +389,148 @@
         </JavaSampler>
         <hashTree/>
       </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Cognito Thread Group" enabled="true">
+        <stringProp name="TestPlan.comments">Thread group to execute create and login user load testing over Cognito.</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Create User" enabled="true">
+          <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="aws_access_key_id" elementType="Argument">
+                <stringProp name="Argument.name">aws_access_key_id</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_secret_access_key" elementType="Argument">
+                <stringProp name="Argument.name">aws_secret_access_key</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_session_token" elementType="Argument">
+                <stringProp name="Argument.name">aws_session_token</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_region" elementType="Argument">
+                <stringProp name="Argument.name">aws_region</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_configure_profile" elementType="Argument">
+                <stringProp name="Argument.name">aws_configure_profile</stringProp>
+                <stringProp name="Argument.value">default</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cognito_user_pool_id" elementType="Argument">
+                <stringProp name="Argument.name">cognito_user_pool_id</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cognito_user_username" elementType="Argument">
+                <stringProp name="Argument.name">cognito_user_username</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cognito_user_email" elementType="Argument">
+                <stringProp name="Argument.name">cognito_user_email</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cognito_user_password" elementType="Argument">
+                <stringProp name="Argument.name">cognito_user_password</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="classname">org.apache.jmeter.protocol.aws.cognito.CognitoProducerAdminCreateUser</stringProp>
+        </JavaSampler>
+        <hashTree/>
+        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Login User" enabled="true">
+          <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="aws_access_key_id" elementType="Argument">
+                <stringProp name="Argument.name">aws_access_key_id</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_secret_access_key" elementType="Argument">
+                <stringProp name="Argument.name">aws_secret_access_key</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_session_token" elementType="Argument">
+                <stringProp name="Argument.name">aws_session_token</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_region" elementType="Argument">
+                <stringProp name="Argument.name">aws_region</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="aws_configure_profile" elementType="Argument">
+                <stringProp name="Argument.name">aws_configure_profile</stringProp>
+                <stringProp name="Argument.value">default</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cognito_client_id" elementType="Argument">
+                <stringProp name="Argument.name">cognito_client_id</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cognito_client_secret_key" elementType="Argument">
+                <stringProp name="Argument.name">cognito_client_secret_key</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cognito_user_pool_id" elementType="Argument">
+                <stringProp name="Argument.name">cognito_user_pool_id</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cognito_user_username" elementType="Argument">
+                <stringProp name="Argument.name">cognito_user_username</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cognito_user_password" elementType="Argument">
+                <stringProp name="Argument.name">cognito_user_password</stringProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cognito_user_access_token_var_name" elementType="Argument">
+                <stringProp name="Argument.name">cognito_user_access_token_var_name</stringProp>
+                <stringProp name="Argument.value">COGNITO_USER_ACCESS_TOKEN</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cognito_user_id_token_var_name" elementType="Argument">
+                <stringProp name="Argument.name">cognito_user_id_token_var_name</stringProp>
+                <stringProp name="Argument.value">COGNITO_USER_ID_TOKEN</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cognito_user_refresh_token_var_name" elementType="Argument">
+                <stringProp name="Argument.name">cognito_user_refresh_token_var_name</stringProp>
+                <stringProp name="Argument.value">COGNITO_USER_REFRESH_TOKEN</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="classname">org.apache.jmeter.protocol.aws.cognito.CognitoProducerAdminLoginUser</stringProp>
+        </JavaSampler>
+        <hashTree/>
+      </hashTree>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
