@@ -17,6 +17,7 @@ With `awsmeter` you can test the below aws services:
 * [Kinesis Data Stream](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/kinesis)
 * [SQS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sqs) 
 * [SNS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sns)
+* [Cognito](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/cognito)
 
 # Install
 
