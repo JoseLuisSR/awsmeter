@@ -91,7 +91,7 @@ public abstract class CognitoProducerSampler extends AWSSampler implements AWSCl
      */
     @Override
     public SdkClient createSdkClient(Map<String, String> credentials) {
-        return CognitoIdentityProviderClient.builder()
+        return wrapClientForLocalstack(CognitoIdentityProviderClient.builder(), getAWSEndpoint(credentials))
                 .region(Region.of(getAWSRegion(credentials)))
                 .credentialsProvider(getAwsCredentialsProvider(credentials))
                 .build();
