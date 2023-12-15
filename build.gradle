@@ -5,6 +5,11 @@ plugins {
 group 'org.apache.jmeter.protocol.aws'
 version '3.0.0'
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility= JavaVersion.VERSION_17
+}
+
 repositories {
     mavenCentral()
 }
@@ -24,17 +29,17 @@ dependencies {
         withModule("org.apache.jmeter:ApacheJMeter_java", ApacheJMeterRule)
         withModule("org.apache.jmeter:ApacheJMeter_core", ApacheJMeterRule)
     }
-    implementation 'org.apache.jmeter:ApacheJMeter_java:5.4'
-    compileOnly 'org.apache.jmeter:ApacheJMeter_core:5.4'
-    implementation platform('software.amazon.awssdk:bom:2.15.0')
-    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.971')
+    implementation 'org.apache.jmeter:ApacheJMeter_java:5.6.2'
+    compileOnly 'org.apache.jmeter:ApacheJMeter_core:5.6.2'
+    implementation platform('software.amazon.awssdk:bom:2.21.43')
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.610')
     implementation 'software.amazon.awssdk:kinesis'
     implementation 'software.amazon.awssdk:sqs'
     implementation 'software.amazon.awssdk:cognitoidentityprovider'
     implementation 'com.amazonaws:aws-java-sdk-sns'
     implementation 'com.amazonaws:aws-java-sdk-sts'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    implementation 'com.fasterxml.jackson.core:jackson-core'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
