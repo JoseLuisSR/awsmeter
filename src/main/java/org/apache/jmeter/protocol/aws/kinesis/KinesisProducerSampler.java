@@ -73,7 +73,7 @@ public class KinesisProducerSampler extends AWSSampler implements AWSClientSDK2 
      */
     @Override
     public SdkClient createSdkClient(Map<String, String> credentials) {
-        return KinesisClient.builder()
+        return wrapClientForLocalstack(KinesisClient.builder(), getAWSEndpoint(credentials))
                 .region(Region.of(getAWSRegion(credentials)))
                 .credentialsProvider(getAwsCredentialsProvider(credentials))
                 .build();

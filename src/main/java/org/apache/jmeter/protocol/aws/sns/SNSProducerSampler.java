@@ -76,9 +76,9 @@ public abstract class SNSProducerSampler extends AWSSampler implements AWSClient
      */
     @Override
     public AwsSyncClientBuilder createAWSClient(Map<String, String> credentials) {
-        return AmazonSNSClient.builder()
-                .withCredentials(getAWSCredentialsProvider(credentials))
-                .withRegion(Regions.fromName(getAWSRegion(credentials)));
+        String awsRegion = getAWSRegion(credentials);
+        return wrapClientForLocalstack(AmazonSNSClient.builder(), getAWSEndpoint(credentials), awsRegion)
+                .withCredentials(getAWSCredentialsProvider(credentials));
     }
 
     /**

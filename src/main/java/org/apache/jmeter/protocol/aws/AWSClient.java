@@ -88,6 +88,18 @@ public interface AWSClient {
     }
 
     /**
+     * Get custom AWS endpoint from input of JMeter Java Request parameter.
+     * @param credentials
+     *        Represents the input of JMeter Java Request parameters.
+     * @return AWS endpoint String.
+     */
+    default String getAWSEndpoint(Map<String, String> credentials){
+        return Optional.ofNullable(credentials.get(AWSSampler.AWS_ENDPOINT_CUSTOM))
+                .filter(Predicate.not(String::isEmpty))
+                .orElse("");
+    }
+
+    /**
      * Function to get DefaultAwsRegionProviderChain from profile file.
      */
     Function<Map<String, String>, DefaultAwsRegionProviderChain> getDefaultAwsRegionProviderChain = credentials ->
