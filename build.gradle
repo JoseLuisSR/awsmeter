@@ -36,6 +36,7 @@ dependencies {
     implementation 'software.amazon.awssdk:kinesis'
     implementation 'software.amazon.awssdk:sqs'
     implementation 'software.amazon.awssdk:cognitoidentityprovider'
+    implementation 'software.amazon.awssdk:eventbridge'
     implementation 'com.amazonaws:aws-java-sdk-sns'
     implementation 'com.amazonaws:aws-java-sdk-sts'
     implementation 'com.fasterxml.jackson.core:jackson-core'
