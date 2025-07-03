@@ -84,7 +84,7 @@ public abstract class SQSProducerSampler extends AWSSampler implements AWSClient
      */
     @Override
     public SdkClient createSdkClient(Map<String, String> credentials) {
-        return SqsClient.builder()
+        return wrapClientForLocalstack(SqsClient.builder(), getAWSEndpoint(credentials))
                 .region(Region.of(getAWSRegion(credentials)))
                 .credentialsProvider(getAwsCredentialsProvider(credentials))
                 .build();

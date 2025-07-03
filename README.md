@@ -157,3 +157,11 @@ When you installed `awsmeter` using **jmeter-plugins** and executed JMeter with 
 ![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-compiled-issue.png)
 
 To fix it, please install Java 11 and execute JMeter with this version or install `awsmeter` following the steps described in the [Install](https://github.com/JoseLuisSR/awsmeter#install) section and execute JMeter with th version of Java you have (minimum 8). 
+
+# Localstack Support
+If you need to use the Localstack instead of real AWS - you should change **aws_endpoint_custom** parameter in plugin GUI from empty stirng to some URL of your Localstack instance (with Localstack Edge port)
+
+To avoid a problem with SSL validation - please add SSL certificate of your Localstack to JVM cacerts:
+```
+keytool -alias ANY_NAME -import -keystore "%JAVA_HOME%\lib\security\cacerts" -file some_localstack_selfsigned_certificate.crt
+```
