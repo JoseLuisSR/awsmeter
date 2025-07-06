@@ -14,6 +14,7 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,8 +85,11 @@ public abstract class SQSProducerSampler extends AWSSampler implements AWSClient
      */
     @Override
     public SdkClient createSdkClient(Map<String, String> credentials) {
-        return wrapClientForLocalstack(SqsClient.builder(), getAWSEndpoint(credentials))
-                .region(Region.of(getAWSRegion(credentials)))
+        
+        String region = getAWSRegion(credentials);
+        return SqsClient.builder()
+                .endpointOverride(URI.create(getAWSEndpoint(credentials, SqsClient.SERVICE_NAME, region)))
+                .region(Region.of(region))
                 .credentialsProvider(getAwsCredentialsProvider(credentials))
                 .build();
     }
