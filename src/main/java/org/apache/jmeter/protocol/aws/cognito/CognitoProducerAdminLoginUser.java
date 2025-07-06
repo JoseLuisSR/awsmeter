@@ -83,13 +83,13 @@ public class CognitoProducerAdminLoginUser extends CognitoProducerSampler {
             AuthenticationResultType authResult = loginUserRsp.authenticationResult();
             Optional.ofNullable(context.getParameter(COGNITO_USER_ACCESS_TOKEN_VAR_NAME))
                 .filter(not(String::isBlank))
-                .ifPresent(varName -> context.getJMeterVariables().put(varName, authResult.accessToken()));
+                .ifPresent(varName -> context.getJMeterContext().getVariables().put(varName, authResult.accessToken()));
             Optional.ofNullable(context.getParameter(COGNITO_USER_ID_TOKEN_VAR_NAME))
                 .filter(not(String::isBlank))
-                .ifPresent(varName -> context.getJMeterVariables().put(varName, authResult.idToken()));
+                .ifPresent(varName -> context.getJMeterContext().getVariables().put(varName, authResult.idToken()));
             Optional.ofNullable(context.getParameter(COGNITO_USER_REFRESH_TOKEN_VAR_NAME))
                 .filter(not(String::isBlank))
-                .ifPresent(varName -> context.getJMeterVariables().put(varName, authResult.refreshToken()));
+                .ifPresent(varName -> context.getJMeterContext().getVariables().put(varName, authResult.refreshToken()));
             
             sampleResultSuccess(result, String.format("Auth Result: %s", loginUserRsp.authenticationResult()));            
         } catch (CognitoIdentityProviderException exc){

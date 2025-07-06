@@ -1,7 +1,7 @@
 package org.apache.jmeter.protocol.aws.sns;
 
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.client.builder.AwsSyncClientBuilder;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClient;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
@@ -76,8 +76,10 @@ public abstract class SNSProducerSampler extends AWSSampler implements AWSClient
      */
     @Override
     public AwsSyncClientBuilder createAWSClient(Map<String, String> credentials) {
-        String awsRegion = getAWSRegion(credentials);
-        return wrapClientForLocalstack(AmazonSNSClient.builder(), getAWSEndpoint(credentials), awsRegion)
+        
+        String region = getAWSRegion(credentials);
+        return AmazonSNSClient.builder()
+                .withEndpointConfiguration(new EndpointConfiguration(getAWSEndpoint(credentials, AmazonSNS.ENDPOINT_PREFIX, region), region))
                 .withCredentials(getAWSCredentialsProvider(credentials));
     }
 

@@ -16,6 +16,7 @@ import software.amazon.awssdk.services.kinesis.model.KinesisException;
 import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
 import software.amazon.awssdk.services.kinesis.model.PutRecordResponse;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,8 +74,11 @@ public class KinesisProducerSampler extends AWSSampler implements AWSClientSDK2 
      */
     @Override
     public SdkClient createSdkClient(Map<String, String> credentials) {
-        return wrapClientForLocalstack(KinesisClient.builder(), getAWSEndpoint(credentials))
-                .region(Region.of(getAWSRegion(credentials)))
+
+        String region = getAWSRegion(credentials);
+        return KinesisClient.builder()
+                .endpointOverride(URI.create(getAWSEndpoint(credentials, KinesisClient.SERVICE_NAME, region)))
+                .region(Region.of(region))
                 .credentialsProvider(getAwsCredentialsProvider(credentials))
                 .build();
     }
