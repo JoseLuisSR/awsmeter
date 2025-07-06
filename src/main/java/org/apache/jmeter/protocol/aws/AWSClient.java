@@ -93,10 +93,10 @@ public interface AWSClient {
      *        Represents the input of JMeter Java Request parameters.
      * @return AWS endpoint String.
      */
-    default String getAWSEndpoint(Map<String, String> credentials){
+    default String getAWSEndpoint(Map<String, String> credentials, String service, String region){
         return Optional.ofNullable(credentials.get(AWSSampler.AWS_ENDPOINT_CUSTOM))
                 .filter(Predicate.not(String::isEmpty))
-                .orElse("");
+                .orElse(String.format(AWSSampler.AWS_ENDPOINT, service, region));
     }
 
     /**

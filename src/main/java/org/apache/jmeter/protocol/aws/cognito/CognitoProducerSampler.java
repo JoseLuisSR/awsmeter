@@ -1,5 +1,6 @@
 package org.apache.jmeter.protocol.aws.cognito;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -91,8 +92,11 @@ public abstract class CognitoProducerSampler extends AWSSampler implements AWSCl
      */
     @Override
     public SdkClient createSdkClient(Map<String, String> credentials) {
-        return wrapClientForLocalstack(CognitoIdentityProviderClient.builder(), getAWSEndpoint(credentials))
-                .region(Region.of(getAWSRegion(credentials)))
+
+        String region = getAWSRegion(credentials);
+        return CognitoIdentityProviderClient.builder()
+                .endpointOverride(URI.create(getAWSEndpoint(credentials, CognitoIdentityProviderClient.SERVICE_NAME, region)))
+                .region(Region.of(region))
                 .credentialsProvider(getAwsCredentialsProvider(credentials))
                 .build();
     }

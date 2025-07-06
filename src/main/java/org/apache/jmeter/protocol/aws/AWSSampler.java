@@ -1,17 +1,12 @@
 package org.apache.jmeter.protocol.aws;
 
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.client.builder.AwsSyncClientBuilder;
-import com.amazonaws.regions.Regions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.samplers.SampleResult;
-import software.amazon.awssdk.core.client.builder.SdkClientBuilder;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -56,6 +51,11 @@ public abstract class AWSSampler implements JavaSamplerClient{
      * Default AWS CLI profile.
      */
     protected static final String AWS_DEFAULT_PROFILE = "default";
+
+    /**
+     * AWS endpoint
+     */
+    protected static final String AWS_ENDPOINT = "https://%s.%s.amazonaws.com";
 
     /**
      * Custom AWS endpoint.
@@ -197,33 +197,6 @@ public abstract class AWSSampler implements JavaSamplerClient{
                 new TypeReference<List<MessageAttribute>>() {}).stream()
                 .limit(MSG_ATTRIBUTES_MAX)
                 .collect(Collectors.toList());
-    }
-
-    protected <T extends AwsSyncClientBuilder> T wrapClientForLocalstack(
-            T sdkClientBuilder,
-            String customEndpoint,
-            String region
-    ) {
-        if (customEndpoint.isBlank()) {
-            return (T) sdkClientBuilder.withRegion(Regions.fromName(region));
-        } else {
-            return (T) sdkClientBuilder.withEndpointConfiguration(
-                    new AwsClientBuilder.EndpointConfiguration(customEndpoint, region)
-            );
-        }
-    }
-
-    protected <T extends SdkClientBuilder> T wrapClientForLocalstack(
-            T sdkClientBuilder,
-            String customEndpoint
-    ) {
-        if (customEndpoint.isBlank()) {
-            return sdkClientBuilder;
-        } else {
-            return (T) sdkClientBuilder.endpointOverride(
-                    URI.create(customEndpoint)
-            );
-        }
     }
 
 }
