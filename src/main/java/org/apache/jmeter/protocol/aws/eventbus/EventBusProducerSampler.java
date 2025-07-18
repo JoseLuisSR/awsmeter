@@ -15,6 +15,8 @@ import software.amazon.awssdk.services.eventbridge.model.PutEventsRequest;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsRequestEntry;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsResponse;
 import software.amazon.awssdk.services.eventbridge.model.EventBridgeException;
+
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,9 +81,9 @@ public class EventBusProducerSampler extends AWSSampler implements AWSClientSDK2
     @Override
     public SdkClient createSdkClient(Map<String, String> credentials) {
 
-        String region = getAwsRegion(credentials);
+        String region = getAWSRegion(credentials);
         return EventBridgeClient.builder()
-                .endPointOverride(getgetAWSEndpoint(credentials, EventBridgeClient.SERVICE_NAME, region))
+                .endpointOverride(URI.create(getAWSEndpoint(credentials, EventBridgeClient.SERVICE_NAME, region)))
                 .region(Region.of(region))
                 .credentialsProvider(getAwsCredentialsProvider(credentials))
                 .build();
