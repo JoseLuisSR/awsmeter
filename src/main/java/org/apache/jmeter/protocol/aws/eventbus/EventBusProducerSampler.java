@@ -14,7 +14,9 @@ import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsRequest;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsRequestEntry;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsResponse;
-import software.amazon.awssdk.services.kinesis.model.KinesisException;
+import software.amazon.awssdk.services.eventbridge.model.EventBridgeException;
+
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,20 +68,23 @@ public class EventBusProducerSampler extends AWSSampler implements AWSClientSDK2
             .collect(Collectors.toList());
 
     /**
-     * AWS Kinesis Data Stream Client.
+     * AWS EventBridge Client.
      */
     private EventBridgeClient ebClient;
 
     /**
-     * Create AWS Kinesis Data Stream Client.
+     * Create AWS EventBridge Client.
      * @param credentials
      *        Represents the input of JMeter Java Request parameters.
-     * @return KinesisClient extends SdkClient super class.
+     * @return EventBridge Client extends SdkClient super class.
      */
     @Override
     public SdkClient createSdkClient(Map<String, String> credentials) {
+
+        String region = getAWSRegion(credentials);
         return EventBridgeClient.builder()
-                .region(Region.of(getAWSRegion(credentials)))
+                .endpointOverride(URI.create(getAWSEndpoint(credentials, EventBridgeClient.SERVICE_NAME, region)))
+                .region(Region.of(region))
                 .credentialsProvider(getAwsCredentialsProvider(credentials))
                 .build();
     }
@@ -105,7 +110,7 @@ public class EventBusProducerSampler extends AWSSampler implements AWSClientSDK2
     @Override
     public void setupTest(JavaSamplerContext context) {
 
-        log.info("Setup Kinesis Producer Sampler.");
+        log.info("Setup EventBridge Producer Sampler.");
         Map<String, String> credentials = new HashMap<>();
 
         context.getParameterNamesIterator()
@@ -114,7 +119,7 @@ public class EventBusProducerSampler extends AWSSampler implements AWSClientSDK2
                     log.info("Parameter: " + k + ", value: " + credentials.get(k));
                 });
 
-        log.info("Create Kinesis Producer.");
+        log.info("Create EventBridge Client.");
         ebClient = (EventBridgeClient) createSdkClient(credentials);
     }
 
@@ -142,7 +147,7 @@ public class EventBusProducerSampler extends AWSSampler implements AWSClientSDK2
             sampleResultSuccess(result, 
                 response.entries().stream().map(
                     entry -> String.format("Event Id: %s", entry.eventId())).collect(Collectors.joining (",")));
-        }catch (KinesisException e){
+        }catch (EventBridgeException e){
             sampleResultFail(result, e.awsErrorDetails().errorCode(), e.awsErrorDetails().errorMessage());
         }
 
@@ -156,7 +161,7 @@ public class EventBusProducerSampler extends AWSSampler implements AWSClientSDK2
      */
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        log.info("Close Kinesis Producer.");
+        log.info("Close EventBridge Client.");
         Optional.ofNullable(ebClient)
                 .ifPresent(client -> client.close());
     }
