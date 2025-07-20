@@ -68,7 +68,7 @@ public class EventBusProducerSampler extends AWSSampler implements AWSClientSDK2
             .collect(Collectors.toList());
 
     /**
-     * AWS Even Bridge Client.
+     * AWS EventBridge Client.
      */
     private EventBridgeClient ebClient;
 
@@ -119,7 +119,7 @@ public class EventBusProducerSampler extends AWSSampler implements AWSClientSDK2
                     log.info("Parameter: " + k + ", value: " + credentials.get(k));
                 });
 
-        log.info("Create EventBrdige Client.");
+        log.info("Create EventBridge Client.");
         ebClient = (EventBridgeClient) createSdkClient(credentials);
     }
 
@@ -161,7 +161,7 @@ public class EventBusProducerSampler extends AWSSampler implements AWSClientSDK2
      */
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        log.info("Close EventBridge Clien.");
+        log.info("Close EventBridge Client.");
         Optional.ofNullable(ebClient)
                 .ifPresent(client -> client.close());
     }
