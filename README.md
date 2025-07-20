@@ -18,6 +18,7 @@ With `awsmeter` you can test the below aws services:
 * [SQS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sqs) 
 * [SNS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sns)
 * [Cognito](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/cognito)
+* [EventBridge](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/eventbus)
 
 # Install
 
