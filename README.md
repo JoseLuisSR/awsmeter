@@ -127,6 +127,32 @@ Leave this parameter empty to use the aws region defined in config file in .aws 
   you can use profile to classify credentials for each AWS account. The main profile is 'default', choose other that you have in credentials and config files.
 
 
+## AWS Credentials in Cloud Environments
+
+`awsmeter` supports multiple credential sources and automatically uses the most appropriate one based on your configuration:
+
+### Local Development
+- **Explicit credentials**: Provide `aws_access_key_id` and `aws_secret_access_key` parameters in JMeter
+- **Profile-based**: Leave credential parameters empty and specify a profile name in `aws_configure_profile`
+
+### Cloud Environments (ECS, EC2, Lambda)
+For applications running in AWS cloud environments with IAM roles, leave all credential parameters empty or set to their default values:
+
+```
+aws_access_key_id: (empty)
+aws_secret_access_key: (empty)
+aws_session_token: (empty)
+aws_configure_profile: default (or empty)
+```
+
+`awsmeter` will automatically detect and use credentials from:
+- **ECS Task IAM Role** (when running in Amazon ECS)
+- **EC2 Instance Profile** (when running on Amazon EC2)
+- **Environment variables** (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN)
+
+This eliminates the need to manage credentials manually in cloud environments and follows AWS security best practices.
+
+
 To know the parameters needed by AWS Service please go to:
 
 * [Kinesis Data Stream](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/kinesis)
