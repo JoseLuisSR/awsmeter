@@ -2,13 +2,10 @@ package org.apache.jmeter.protocol.aws;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -22,7 +19,7 @@ public interface AWSClient {
     Logger log = LoggerFactory.getLogger(AWSClient.class);
 
     /**
-     * Get AWS Region from input of JMeter Java Request parameter or from credentials file.
+     * Get AWS Region from input of JMeter Java Request parameter or from default provider chain.
      * @param credentials
      *        Represents the input of JMeter Java Request parameters.
      * @return AWS Region String.
@@ -31,58 +28,28 @@ public interface AWSClient {
 
         return Optional.ofNullable(credentials.get(AWSSampler.AWS_REGION))
                 .filter(Predicate.not(String::isEmpty))
-                .orElseGet(() -> getDefaultAwsRegionProviderChain.apply(credentials)
-                        .getRegion()
-                        .toString());
-    }
-
-    /**
-     * Get AWS IAM user Access Key id from input of JMeter Java Request parameter or from credentials file.
-     * @param credentials
-     *        Represents the input of JMeter Java Request parameters.
-     * @return AWS IAM user Access Key id String.
-     */
-    default String getAWSAccessKeyId(Map<String, String> credentials){
-
-        return Optional.ofNullable(credentials.get(AWSSampler.AWS_ACCESS_KEY_ID))
-                .filter(Predicate.not(String::isEmpty))
-                .orElseGet(() -> getProfileCredentialsProvider.apply(credentials)
-                        .resolveCredentials()
-                        .accessKeyId());
-    }
-
-    /**
-     * Get AWS IAM Secret Access Key from input of JMeter Java Request parameter or from credentials file.
-     * @param credentials
-     *        Represents the input of JMeter Java Request parameters.
-     * @return AWS IAM user Secret Access Key String.
-     */
-    default String getAWSSecretAccessKey(Map<String, String> credentials){
-
-        return Optional.ofNullable(credentials.get(AWSSampler.AWS_SECRET_ACCESS_KEY))
-                .filter(Predicate.not(String::isEmpty))
-                .orElseGet(() -> getProfileCredentialsProvider.apply(credentials)
-                        .resolveCredentials()
-                        .secretAccessKey());
-    }
-
-    /**
-     * Get AWS Session Token from input of JMeter Java Request parameter or from credentials file.
-     * @param credentials
-     *        Represents the input of JMeter Java Request parameters.
-     * @return AWS Session Token String.
-     */
-    default String getAWSSessionToken(Map<String, String> credentials){
-
-        return Optional.ofNullable(credentials.get(AWSSampler.AWS_SESSION_TOKEN))
-                .filter(Predicate.not(String::isEmpty))
                 .orElseGet(() -> {
-                    try {
-                        return ((AwsSessionCredentials)getProfileCredentialsProvider.apply(credentials)
-                                .resolveCredentials())
-                                .sessionToken();
-                    } catch (Exception e) {
-                        return null;
+                    // Check if a specific profile is configured (not default)
+                    String profileName = credentials.get(AWSSampler.AWS_CONFIG_PROFILE);
+                    boolean hasSpecificProfile = Optional.ofNullable(profileName)
+                            .filter(Predicate.not(String::isEmpty))
+                            .filter(profile -> !AWSSampler.AWS_DEFAULT_PROFILE.equals(profile))
+                            .isPresent();
+                    
+                    if (hasSpecificProfile) {
+                        // Use profile-specific region provider
+                        return DefaultAwsRegionProviderChain.builder()
+                                .profileName(profileName)
+                                .build()
+                                .getRegion()
+                                .toString();
+                    } else {
+                        // Use default region provider chain (without profile constraint)
+                        // This will check environment variables, instance metadata, etc.
+                        return DefaultAwsRegionProviderChain.builder()
+                                .build()
+                                .getRegion()
+                                .toString();
                     }
                 });
     }
@@ -98,21 +65,5 @@ public interface AWSClient {
                 .filter(Predicate.not(String::isEmpty))
                 .orElse(String.format(AWSSampler.AWS_ENDPOINT, service, region));
     }
-
-    /**
-     * Function to get DefaultAwsRegionProviderChain from profile file.
-     */
-    Function<Map<String, String>, DefaultAwsRegionProviderChain> getDefaultAwsRegionProviderChain = credentials ->
-            DefaultAwsRegionProviderChain.builder()
-                    .profileName(credentials.get(AWSSampler.AWS_CONFIG_PROFILE))
-                    .build();
-
-    /**
-     * Function to get ProfileCredentialsProvider from profile file.
-     */
-    Function<Map<String, String>, ProfileCredentialsProvider> getProfileCredentialsProvider = credentials ->
-            ProfileCredentialsProvider.builder()
-                    .profileName(credentials.get(AWSSampler.AWS_CONFIG_PROFILE))
-                    .build();
 
 }
