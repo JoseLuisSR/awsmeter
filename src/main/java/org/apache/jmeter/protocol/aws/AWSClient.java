@@ -25,33 +25,95 @@ public interface AWSClient {
      * @return AWS Region String.
      */
     default String getAWSRegion(Map<String, String> credentials){
-
         return Optional.ofNullable(credentials.get(AWSSampler.AWS_REGION))
                 .filter(Predicate.not(String::isEmpty))
-                .orElseGet(() -> {
-                    // Check if a specific profile is configured (not default)
-                    String profileName = credentials.get(AWSSampler.AWS_CONFIG_PROFILE);
-                    boolean hasSpecificProfile = Optional.ofNullable(profileName)
-                            .filter(Predicate.not(String::isEmpty))
-                            .filter(profile -> !AWSSampler.AWS_DEFAULT_PROFILE.equals(profile))
-                            .isPresent();
-                    
-                    if (hasSpecificProfile) {
-                        // Use profile-specific region provider
-                        return DefaultAwsRegionProviderChain.builder()
-                                .profileName(profileName)
-                                .build()
-                                .getRegion()
-                                .toString();
-                    } else {
-                        // Use default region provider chain (without profile constraint)
-                        // This will check environment variables, instance metadata, etc.
-                        return DefaultAwsRegionProviderChain.builder()
-                                .build()
-                                .getRegion()
-                                .toString();
-                    }
-                });
+                .orElseGet(() -> getRegionFromProviderChain(credentials));
+    }
+
+    /**
+     * Gets AWS region from the provider chain, considering the configured profile.
+     * @param credentials
+     *        Represents the input of JMeter Java Request parameters.
+     * @return AWS Region String from provider chain.
+     */
+    default String getRegionFromProviderChain(Map<String, String> credentials) {
+
+        if (hasSpecificProfile(credentials)) {
+            return getRegionWithProfile(credentials);
+        } else {
+            return getRegionWithDefaultProviderChain();
+        }
+    }
+
+    /**
+     * Checks if a specific AWS profile (not the default profile) is configured.
+     * @param credentials
+     *        Map containing the AWS configuration parameters from JMeter
+     * @return true if a specific profile is configured, false if default or empty
+     */
+    default boolean hasSpecificProfile(Map<String, String> credentials) {
+        
+        String profileName = credentials.get(AWSSampler.AWS_CONFIG_PROFILE);
+        return Optional.ofNullable(profileName)
+                .filter(Predicate.not(String::isEmpty))
+                .filter(profile -> !AWSSampler.AWS_DEFAULT_PROFILE.equals(profile))
+                .isPresent();
+    }
+
+    /**
+     * Gets AWS region using a specific profile name.
+     * @param profileName
+     *        The AWS profile name to use for region resolution.
+     * @return AWS Region String from the specified profile.
+     */
+    default String getRegionWithProfile(Map<String, String> credentials) {
+
+        String profileName = credentials.get(AWSSampler.AWS_CONFIG_PROFILE);
+        return DefaultAwsRegionProviderChain.builder()
+                .profileName(profileName)
+                .build()
+                .getRegion()
+                .toString();
+    }
+
+    /**
+     * Gets AWS region using the default provider chain.
+     * This will check environment variables, instance metadata, etc.
+     * @return AWS Region String from default provider chain.
+     */
+    default String getRegionWithDefaultProviderChain() {
+        return DefaultAwsRegionProviderChain.builder()
+                .build()
+                .getRegion()
+                .toString();
+    }
+
+
+    /**
+     * Checks if explicit AWS credentials (access key and secret key) are provided in the configuration.
+     * @param credentials
+     *        Map containing the AWS configuration parameters from JMeter
+     * @return true if both access key and secret key are present and not empty, false otherwise
+     */
+    default boolean hasExplicitCredentials(Map<String, String> credentials) {
+        boolean hasExplicitAccessKey = isParameterPresent(credentials, AWSSampler.AWS_ACCESS_KEY_ID);
+        boolean hasExplicitSecretKey = isParameterPresent(credentials, AWSSampler.AWS_SECRET_ACCESS_KEY);
+        
+        return hasExplicitAccessKey && hasExplicitSecretKey;
+    }
+
+    /**
+     * Utility method to check if a parameter is present and not empty in the credentials map.
+     * @param credentials
+     *        Map containing the AWS configuration parameters from JMeter
+     * @param parameterKey
+     *        The key of the parameter to check
+     * @return true if the parameter exists and is not empty, false otherwise
+     */
+    default boolean isParameterPresent(Map<String, String> credentials, String parameterKey) {
+        return Optional.ofNullable(credentials.get(parameterKey))
+                .filter(Predicate.not(String::isEmpty))
+                .isPresent();
     }
 
     /**

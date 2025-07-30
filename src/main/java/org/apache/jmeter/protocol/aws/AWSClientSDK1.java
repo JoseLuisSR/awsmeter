@@ -36,32 +36,14 @@ public interface AWSClientSDK1 extends AWSClient{
      */
     default AWSCredentialsProvider getAWSCredentialsProvider(Map<String, String> credentials){
         
-        // Check if explicit credentials are provided
-        boolean hasExplicitAccessKey = Optional.ofNullable(credentials.get(AWSSampler.AWS_ACCESS_KEY_ID))
-                .filter(Predicate.not(String::isEmpty))
-                .isPresent();
-        
-        boolean hasExplicitSecretKey = Optional.ofNullable(credentials.get(AWSSampler.AWS_SECRET_ACCESS_KEY))
-                .filter(Predicate.not(String::isEmpty))
-                .isPresent();
-        
         // If explicit credentials are provided, use static credentials
-        if (hasExplicitAccessKey && hasExplicitSecretKey) {
-            return Optional.ofNullable(credentials.get(AWSSampler.AWS_SESSION_TOKEN))
-                    .filter(Predicate.not(String::isEmpty))
-                    .map(sessionToken -> buildSessionAWSCredentials(credentials, sessionToken))
-                    .orElse(buildBasicAWSCredentials(credentials));
+        if (hasExplicitCredentials(credentials)) {
+            return createExplicitCredentialsProvider(credentials);
         }
         
-        // Check if a specific profile is configured (not default)
-        String profileName = credentials.get(AWSSampler.AWS_CONFIG_PROFILE);
-        boolean hasSpecificProfile = Optional.ofNullable(profileName)
-                .filter(Predicate.not(String::isEmpty))
-                .filter(profile -> !AWSSampler.AWS_DEFAULT_PROFILE.equals(profile))
-                .isPresent();
-        
         // If a specific profile is configured, use ProfileCredentialsProvider
-        if (hasSpecificProfile) {
+        if (hasSpecificProfile(credentials)) {
+            String profileName = credentials.get(AWSSampler.AWS_CONFIG_PROFILE);
             return new ProfileCredentialsProvider(profileName);
         }
         
@@ -72,6 +54,20 @@ public interface AWSClientSDK1 extends AWSClient{
         // 4. Amazon ECS container credentials (ECS task role)
         // 5. Amazon EC2 Instance profile credentials
         return DefaultAWSCredentialsProviderChain.getInstance();
+    }
+
+    /**
+     * Creates an AWS credentials provider using explicit credentials (access key and secret key).
+     * If a session token is provided, creates session credentials; otherwise, creates basic credentials.
+     * @param credentials
+     *        Map containing the AWS configuration parameters from JMeter
+     * @return AWSCredentialsProvider with session or basic credentials
+     */
+    default AWSCredentialsProvider createExplicitCredentialsProvider(Map<String, String> credentials) {
+        return Optional.ofNullable(credentials.get(AWSSampler.AWS_SESSION_TOKEN))
+                .filter(Predicate.not(String::isEmpty))
+                .map(sessionToken -> buildSessionAWSCredentials(credentials, sessionToken))
+                .orElse(buildBasicAWSCredentials(credentials));
     }
 
     /**
