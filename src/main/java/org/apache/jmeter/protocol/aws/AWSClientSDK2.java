@@ -4,6 +4,8 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkClient;
 
 import java.util.Map;
@@ -27,17 +29,52 @@ public interface AWSClientSDK2 extends AWSClient{
     SdkClient createSdkClient(Map<String, String> credentials);
 
     /**
-     * Build AWS Credential Provider with Session Credential or Static Credential.
+     * Build AWS Credential Provider with Session Credential, Static Credential, or Default Credential Chain.
      * @param credentials
      *        Represents the input of JMeter Java Request parameters.
-     * @return AWSCredentialsProvider result of create Basic Session Credentials or Basic Credentials.
+     * @return AWSCredentialsProvider result of create Basic Session Credentials, Basic Credentials, or Default Credentials.
      */
     default AwsCredentialsProvider getAwsCredentialsProvider(Map<String, String> credentials){
+        
+        // If explicit credentials are provided, use static credentials
+        if (hasExplicitCredentials(credentials)) {
+            return buildStaticCredentialsProvider(credentials);
+        }
+        
+        // If a specific profile is configured, use ProfileCredentialsProvider
+        if (hasSpecificProfile(credentials)) {
+            return buildProfileCredentialsProvider(credentials);
+        }
+        
+        // Otherwise, use the default credential provider chain
+        return DefaultCredentialsProvider.create();
+    }
 
-        return Optional.ofNullable(getAWSSessionToken(credentials))
+    /**
+     * Build static credentials provider, choosing between session credentials and basic credentials
+     * based on the presence of a session token.
+     * @param credentials
+     *        Represents the input of JMeter Java Request parameters.
+     * @return StaticCredentialsProvider with session or basic credentials.
+     */
+    default AwsCredentialsProvider buildStaticCredentialsProvider(Map<String, String> credentials) {
+        return Optional.ofNullable(credentials.get(AWSSampler.AWS_SESSION_TOKEN))
                 .filter(Predicate.not(String::isEmpty))
                 .map(sessionToken -> buildAWSSessionCredentials(credentials, sessionToken))
                 .orElse(buildAWSBasicCredentials(credentials));
+    }
+
+    /**
+     * Build AWS Profile Credentials Provider using the specified profile name.
+     * @param credentials
+     *        Represents the input of JMeter Java Request parameters.
+     * @return ProfileCredentialsProvider configured with the specified profile name.
+     */
+    default ProfileCredentialsProvider buildProfileCredentialsProvider(Map<String, String> credentials) {
+        String profileName = credentials.get(AWSSampler.AWS_CONFIG_PROFILE);
+        return ProfileCredentialsProvider.builder()
+                .profileName(profileName)
+                .build();
     }
 
     /**
@@ -50,8 +87,9 @@ public interface AWSClientSDK2 extends AWSClient{
      */
     default StaticCredentialsProvider buildAWSSessionCredentials(Map<String, String> credentials, String sessionToken){
 
-        return StaticCredentialsProvider.create(AwsSessionCredentials.create(getAWSAccessKeyId(credentials),
-                getAWSSecretAccessKey(credentials),
+        return StaticCredentialsProvider.create(AwsSessionCredentials.create(
+                credentials.get(AWSSampler.AWS_ACCESS_KEY_ID),
+                credentials.get(AWSSampler.AWS_SECRET_ACCESS_KEY),
                 sessionToken));
     }
 
@@ -63,8 +101,9 @@ public interface AWSClientSDK2 extends AWSClient{
      */
     default StaticCredentialsProvider buildAWSBasicCredentials(Map<String, String> credentials){
 
-        return StaticCredentialsProvider.create(AwsBasicCredentials.create(getAWSAccessKeyId(credentials),
-                getAWSSecretAccessKey(credentials)));
+        return StaticCredentialsProvider.create(AwsBasicCredentials.create(
+                credentials.get(AWSSampler.AWS_ACCESS_KEY_ID),
+                credentials.get(AWSSampler.AWS_SECRET_ACCESS_KEY)));
     }
 
 }
