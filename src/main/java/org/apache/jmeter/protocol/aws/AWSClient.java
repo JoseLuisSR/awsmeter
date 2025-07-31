@@ -61,10 +61,11 @@ public interface AWSClient {
     }
 
     /**
-     * Gets AWS region using a specific profile name.
-     * @param profileName
-     *        The AWS profile name to use for region resolution.
-     * @return AWS Region String from the specified profile.
+     * Gets AWS region using the specified profile.
+     * This will use the DefaultAwsRegionProviderChain with the provided profile name.
+     * @param credentials
+     *        Represents the input of JMeter Java Request parameters.
+     * @return AWS Region String from specified profile.
      */
     default String getRegionWithProfile(Map<String, String> credentials) {
 
