@@ -1,164 +1,239 @@
-# SQS 
+# 📬 AWS SQS (Simple Queue Service)
 
+AWS Simple Queue Service (SQS) is a fully managed message queuing service that enables you to decouple and scale microservices, distributed systems, and serverless applications. 
 
+This guide provides specific instructions for testing AWS Simple Queue Service (SQS) using the `awsmeter` plugin with Apache JMeter. For general installation and setup instructions, please refer to the [instructions](../../../../../../../../../README.md).
 
-AWS SQS is service to interchange information between systems through messages and queues. Producer application publish messages in queue and consumer application listen the queue to get message and after processed delete it. This is a serverless service where AWS manages the availability, scalability and security (Shared Responsibility Model) of the queue.
+## 🔍 Overview
 
-When you create a queue AWS cares to replicate the queue in the available zones of the region you selected to create the queue, also scale the queue to support the throughput you need and aprovision the infrastructure needed to deploy the queue. Less administrative tasks for you.
+### What is AWS SQS? 
+AWS SQS is a serverless message queuing service that acts as a middleware between distributed components. It provides:
 
-Queues is a great middleware for integration between components decoupling the communication between them, producer doesn't know who and where is the consumer, and the consumer doesn't care where and who is the producer.
+- **Decoupling**: Producers and consumers don't need to know about each other
+- **Scalability**: AWS automatically scales to handle your throughput needs
+- **Reliability**: Messages are replicated across multiple Availability Zones
+- **Security**: Integrated with AWS IAM for fine-grained access control
 
-There are two kinds of [SQS queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html):
+### Queue Types 📦
 
-* **Standard:** It is the default queue where you can publish the message in queue and AWS deliver it at least once, that's mean that is possible the message can repeat also AWS try to delivery the message in the same order were sent. The throughput for this queue is unlimited support many API calls per second.
-  
+**Standard Queues** 
+- ✅ Unlimited throughput
+- ✅ At-least-once delivery
+- ⚠️ Best-effort ordering (messages may arrive out of order)
+- ⚠️ Possible duplicate messages
 
-* **FIFO:** Messages are publishing in this queue and AWS guarantees deliver it only once and in the same order the message were sent. FIFO queues support up to 300 API calls per second and per method (Send, Receive, Delete), you can increase it using batching, for example sending 10 message in single API call.
+**FIFO Queues**
+- ✅ Exactly-once processing
+- ✅ First-in-first-out delivery
+- ✅ No duplicates
+- ⚠️ Limited to 300 API calls per second (3,000 with batching)
+- ⚠️ Must end with `.fifo` suffix
 
+## 🛠️ Prerequisites
 
-# Setting up
+Before you begin, ensure you have completed the [general prerequisites](../../../../../../../../../README.md#prerequisites) and:
 
-To start using `awsmeter` to produce message and publish in queue you need first create SQS queue, follow the below steps:
+- ✅ AWS account with SQS permissions
+- ✅ Basic understanding of AWS IAM and SQS concepts
+- ✅ AWS CLI configured (optional, for LocalStack testing)
 
-1. Sig-on AWS account.
+## ☁️ AWS SQS Setup
 
-   
-2. Go to SQS > Create Queue.
+### Step 1: Create SQS Queue 🏗️
 
-   
-3. Choose the queue type, Standard or FIFO.
+1. **Access AWS Console**
+   - Navigate to SQS service
+   - Click "Create queue"
 
-   
-4. Enter the queue name, for FIFO queue must end with the `.fifo` suffix.
+2. **Choose Queue Type**
+   - Select **Standard** for high throughput scenarios
+   - Select **FIFO** for guaranteed message ordering
 
-   
-5. I recommend understand and use the fields of the configuration section where you can set up:
+3. **Configure Queue Settings**
+   ```
+   Queue name: test-queue (add .fifo for FIFO queues)
+   Visibility timeout: 30 seconds (recommended starting point)
+   Delivery delay: 0 seconds (unless delayed processing needed)
+   Message retention: 4 days (default)
+   Receive message wait time: 0 seconds (short polling)
+   ```
 
+4. **Set Access Permissions** 🔐
+   Create an IAM policy with minimum required permissions:
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": [
+           "sqs:SendMessage",
+           "sqs:ReceiveMessage",
+           "sqs:DeleteMessage",
+           "sqs:GetQueueAttributes",
+           "sqs:GetQueueUrl"
+         ],
+         "Resource": "arn:aws:sqs:region:account-id:queue-name"
+       }
+     ]
+   }
+   ```
 
-* **Visibility timeout:** This is the time that AWS wait receive delete message action before enable the message to process again. If the consumer fails to process the message or delete it then the message become available to process by other consumer.
-  
-* **Delivery delay:** This is helpful when you need to reprocess the message, you can set up the amount of time the message will be hidden for consumers, AWS control the time and deliver the message to consumer when the time is up.
+### Step 2: Create IAM User for Testing 👤
 
-6. The next step is define who can send and receive messages to the queue, since `awsmeter` use AWS IAM User with programmatic access you need to enable it user to access to queue and add the policy to publish SQS Messages with the actions SendMessage at least.
-   
+1. **Create programmatic access user**
+   - Navigate to IAM > Users > Create user
+   - Enable "Programmatic access" only
+   - Attach the SQS policy created above
 
-7. Create the queue. You can leave the rest fields with default values, for more details of each one go to [Creating an Amazon SQS Queue (Console)](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-create-queue.html).
+2. **Securely store credentials**
+   - Access Key ID
+   - Secret Access Key
+   - Session Token (if using temporary credentials)
 
-# Getting Started
+## 🐳 LocalStack Setup (Development & Testing)
 
-After you installed `awsmeter` in JMeter you can start using it to connect and sent messages to SQS queues. There are two Java Request Sampler per queue type (Standard and FIFO) each one has fields to set up the queue name, message body and others parameters, also you need to
-fill the fields to connect AWS account in a region and IAM user with programmatic access.
+LocalStack provides a local AWS cloud stack perfect for development and testing without AWS costs.
 
-You can find JMeter Test Plan in this repository that was configured with SQS Standard and FIFO Thread Group ready to use, you just need to fill few fields to execute test.
+### Create Test Queues
+```bash
+# Set LocalStack endpoint
+export AWS_ENDPOINT_URL=http://localhost:4566
 
-The fields of each Java Request Sampler per SQS queue type are:
+# Create Standard queue
+aws --endpoint-url=http://localhost:4566 sqs create-queue \
+    --queue-name test-standard-queue
 
-## Standard
+# Create FIFO queue
+aws --endpoint-url=http://localhost:4566 sqs create-queue \
+    --queue-name test-fifo-queue.fifo \
+    --attributes FifoQueue=true,ContentBasedDeduplication=true
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSStandardProducerJavaSampler.png)
+# Verify queues were created
+aws --endpoint-url=http://localhost:4566 sqs list-queues
+```
 
-* **sqs_queue_name:** Name of the queue, remember for FIFO queue you need to use `.fifo` suffix at the end.
+## ⚙️ Configuration
 
+> 💡 **AWS Credentials:** Configure your AWS credentials as described in the [Authentication section](../../../../../../../../../README.md#aws-authentication).
 
-* **sqs_msg_body:** The content of the message that you want to send to consumer. A message can include only XML, JSON, and unformatted text. The minimum size of the message body is one character and the maximum size is 256 KB.
+### Standard Queue Configuration 📊
 
+![Standard Queue Sampler](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSStandardProducerJavaSampler.png)
 
-* **sqs_msg_attributes:** You can send metadata with this parameter like the number of times reprocessing a message or geography location of the producer and  just use the message body for business information. The parts of the message attributes are the Name, 
-  Type and Value, only the types String, Number and Binary are allowed, the maximum number of attributes is ten. Message attributes and body are part of the message size restriction (256 KB or 262,144 bytes). 
-  
-  You need to use the below JSON structure that `awsmeter` used to send message attributes:
+**Required Parameters:**
+- **sqs_queue_name**: Queue name (include `.fifo` suffix for FIFO queues)
+- **sqs_msg_body**: Message content (1 character - 256 KB)
+- **access_key_id**: AWS Access Key ID
+- **secret_access_key**: AWS Secret Access Key
+- **region**: AWS region (e.g., `us-east-1`)
 
+**Optional Parameters:**
+- **session_token**: For temporary credentials or federated access
+- **profile**: AWS CLI profile name (alternative to access keys)
+- **endpoint_url**: Custom endpoint (`http://localhost:4566` for LocalStack)
+
+### FIFO Queue Configuration 🔄
+
+![FIFO Queue Sampler](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSFIFOProducerJavaSampler.png)
+
+**Additional Required Parameters for FIFO:**
+- **sqs_msg_group_id**: Groups messages for FIFO processing (max 128 characters)
+- **sqs_msg_deduplication_id**: Prevents duplicates (can be auto-generated)
+
+### Message Attributes Format 📝
+
+Use this JSON structure for message attributes:
+
+```json
 [
-
-    {
-        "name": "attribute-1-name",
-        "type": "String",
-        "value": "aws"
-    },
-    {
-        "name": "attribute-2-name",
-        "type": "Number",
-        "value": "meter"
-    },
-    {
-        "name": "attribute-3-name",
-        "type": "Binary",
-        "value": "sqs"
-    }...
-
+  {
+    "name": "environment",
+    "type": "String", 
+    "value": "production"
+  },
+  {
+    "name": "priority",
+    "type": "Number",
+    "value": "1"
+  },
+  {
+    "name": "correlation-id",
+    "type": "String",
+    "value": "abc-123-def"
+  },
+  {
+    "name": "binary-data",
+    "type": "Binary",
+    "value": "SGVsbG8gV29ybGQ="
+  }
 ]
+```
 
-You can define custom data type label with the format `.custom-data-type` like Binary.gif and Binary.png can help distinguish between file types. [Details of Message Attributes here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html#sqs-message-attributes).
+**Constraints & Considerations:**
+- Maximum 10 attributes per message
+- Attributes count towards the 256 KB message size limit
+- Supported types: `String`, `Number`, `Binary`
+- Custom data types allowed: `Binary.gif`, `String.custom`, etc.
 
-* **sqs_delay_seconds:** When you publish a message in queue, you can set up the time in seconds to delay the delivery of the message to consumer. AWS control the time and validate it before deliver the message. This is  helpful when you need handle reprocessing a message after a period of time, the maximum time is 900 seconds (15 minutes).
-  If you don't specify a value, the default value of **Delivery delay** for the queue applies.
+### Delay Configuration ⏱️
 
+**sqs_delay_seconds Parameter:**
+- **Range**: 0-900 seconds (15 minutes maximum)
+- **Purpose**: Delays message delivery to consumers
+- **Use cases**: Retry scenarios, scheduled processing, rate limiting
+- **FIFO limitation**: Can only be set at queue level, not per message
 
-## FIFO
+## 📊 Monitoring & Observability
 
+### CloudWatch Metrics Dashboard 📈
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSFIFOProducerJavaSampler.png)
+![CloudWatch Metrics](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSCloudWatchMetrics.png)
 
+**Key Metrics to Monitor:**
 
-There are some fields share between Standard and FIFO queue like queue name, body and message attributes, but there are parameters that only apply for FIFO queue, those are:
+1. **NumberOfMessagesSent** 📤
+   - **Description**: Messages successfully published to queue
+   - **Expected**: Should match your test plan's message count
+   - **Alert threshold**: Drops below expected rate
 
-* **sqs_msg_group_id:** Message group id, all the messages that belongs to the same message group are process in FIFO manner (First-In-First-Out), messages with different messages groups might be process out of order. This field is mandatory, you can use it to achieve goals like 
-  [Avoid processing duplicate messages in a multiple-Producer/Consumer system](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html). For FIFO queues, there can be a maximum of 20,000 inflight messages, you need to use it parameter in the right way to 
-  [Avoid having a large backlog of messages with the same message group ID](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html). The length of MessageGroupId is 128 characters. 
+2. **NumberOfMessagesReceived** 📥  
+   - **Description**: Messages retrieved by consumers
+   - **Expected**: Should be ≤ NumberOfMessagesSent
+   - **Alert threshold**: Significantly lower than sent messages
 
+3. **NumberOfMessagesDeleted** 🗑️
+   - **Description**: Successfully processed and removed messages
+   - **Expected**: Should closely match NumberOfMessagesReceived
+   - **Alert threshold**: Processing rate drops significantly
 
-* **sqs_msg_deduplication_id:** AWS use this parameter to check the message is not repeat in a period of five minutes, any message with the same deduplication id and published during the five minutes deduplication interval is accepted successfully but is not delivered to consumer. 
-  Every message must have a unique Message Deduplication Id, this is mandatory, you can put it in the message or you can enable Content Based Deduplication in FIFO queue to use the message body and apply SHA-256 hash to generate the value. See [Exactly-once processing](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues.html#FIFO-queues-exactly-once-processing).
+4. **ApproximateNumberOfVisibleMessages** 👁️
+   - **Description**: Messages available for processing
+   - **Expected**: Should remain low during normal operation
+   - **Alert threshold**: Sustained high values indicate consumer issues
 
+### Interpreting Metrics 🔍
 
-* **sqs_delay_seconds:** Is the same as Standard queue, but you can set this parameter only on a queue level with Delivery delay in the section of configuration.
+**Healthy System Indicators:**
+- Sent ≈ Received ≈ Deleted (within 5% variance)
+- Visible message count remains low (<100 for high-throughput systems)
+- Consistent message processing rate
+- Error rates below 0.1%
 
-# Testing
+**Problem Indicators:**
+- High visible message count (consumer bottleneck or failure)
+- Sent > Received (authentication, permissions, or connectivity issues)
+- Received > Deleted (message processing failures)
+- Irregular spikes in error rates
 
-¿Ready to test? Let's do it. We are going to use `awsmeter` to produce and publish messages in Standard queue and use AWS Management Console to receive the messages:
+### JMeter Performance Monitoring
 
-1. Open JMeter test plan (present in this repository) in JMeter go to SQS Standard Queue Thread Group > SQS Producer.
+**Key JMeter Metrics:**
+- **Response Time**: Should be <200ms for SQS operations
+- **Throughput**: Actual vs expected message rate
+- **Error Rate**: Should be <1% under normal conditions
+- **Active Threads**: Monitor for thread starvation
 
+---
 
-2. Fill the parameters to connect to AWS using **Access key id**, **Secret Access Key** and **Session Token**. If you have [credentials file](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) in you work area you just need to enter the name of the **profile** to get the access key id, secret access key and aws region from credentials and config file.
-
-
-3. Enter the name of the queue that you created. Update the message body and attributes for the values you want. Remember to use the AWS region where you created the queue.
-
-
-4. Execute SQS Standard Queue Thread.
-
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/awsmeter-sqs-producer-test.png)
-
-5. Go to AWS Management Console > Amazon SQS Queues, then Choose the queue you want to test and use the option `Send and receive message`.
-
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSAWSManagementConsole.png)
-
-5. Poll for messages.
-
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSPollingMessages.png)
-
-
-# CloudWatch Metrics
-
-SQS sends information to CloudWatch about the messages received, delivery, deleted and data of the queue state. CloudWatch generate metrics by queue in a period of time, we can use this information to  identify issues publishing or consuming messages. Let's analyze the below image:
-
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/sqs/SQSCloudWatchMetrics.png)
-
-
-We can see three metrics in period of time of 5 minutes, the metrics are:
-
-* **NumberOfMessagesReceived:** The number of messages returned by calls to the ReceiveMessage action.
-
-
-* **NumberOfMessagesDeleted:** The number of messages deleted from the queue.
-
-
-* **NumberOfMessagesSent:** The number of messages added to a queue.
-
-
-We can analyze this information and validate the number of message deleted is close to number of message received to make sure the consumers are available to received, process and deleted the messages, and the number of messages sent is equals to received meaning all the message  published were processed. 
-
-This diagram show us the number of message sent grow from 03:05 to 03:15 and until the 03:25 the consumers start received and deleted these, so could be the consumers were unavailable to process message at this time. 
-
-There are other metrics, more information go to [Amazon SQS Metrics](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-available-cloudwatch-metrics.html).
+**Happy Testing!** 🎉 This guide should help you efficiently test AWS SQS queues using awsmeter and JMeter.

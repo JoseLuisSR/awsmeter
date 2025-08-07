@@ -1,86 +1,154 @@
-# Event Bus (Amazon EventBridge)
+# 🎫 AWS EventBridge 
 
-Amazon EventBridge is a serverless event bus service that makes it easy to connect applications using data from your own applications, integrated SaaS applications, and AWS services. EventBridge delivers a stream of real-time data from event sources such as AWS services, your own applications, and SaaS applications and routes that data to targets such as AWS Lambda.
+Amazon EventBridge is a **serverless event bus service** that enables seamless integration between applications using real-time data streams. This service facilitates the creation of **event-driven architectures** that are loosely coupled, scalable, and fault-tolerant.
 
-EventBridge allows you to build event-driven architectures, which are loosely coupled and distributed. When an event occurs, EventBridge routes the event to the appropriate targets based on rules you define. This enables you to decouple your applications and build scalable, fault-tolerant systems.
+This guide provides specific instructions for testing AWS EventBridge using the `awsmeter` plugin with Apache JMeter. For general installation and setup instructions, please refer to the [instructions](../../../../../../../../../README.md).
 
-EventBridge is a serverless service where AWS manages the infrastructure needed for event routing and delivery across multiple availability zones. The service automatically scales to handle varying event volumes and provides built-in retry logic and dead letter queues for failed event deliveries.
+## Overview 📋
 
-# Setting Up
+EventBridge acts as a central hub for routing events between AWS services, SaaS applications, and custom applications without managing infrastructure.
 
-Before using `awsmeter` to publish events to EventBridge, you need to create an event bus and configure event rules. Below are the steps to set up EventBridge:
+Key capabilities include:
 
-1. Sign-on to your AWS account.
+- 🔄 **Event Routing** Automatically routes events from multiple sources to designated targets
+- 📈 **Auto Scaling** Handles varying event volumes with automatic scaling across availability zones
+- 🛡️ **Built-in Reliability** Includes retry mechanisms and dead letter queues for failed deliveries
+- 🎯 **Rule-based Filtering** Uses flexible patterns to match and route specific events
+- 🔌 **Native Integrations** Connects with 90+ AWS services and popular SaaS applications
+- ⚡ **Real-time Processing** Delivers events with low latency for time-sensitive applications
+- 🏗️ **Serverless Architecture** No infrastructure to provision or manage
+- 🔒 **Secure by Default** Built-in encryption and IAM integration for access control
 
-2. Go to Amazon EventBridge > Event buses > Create event bus.
+EventBridge eliminates the need to manage infrastructure for event processing, allowing you to focus on building robust, distributed systems.
 
-3. Enter the event bus name. You can use the default event bus or create a custom one.
+## Prerequisites ✅
 
-4. (Optional) Set up event rules to route events to targets like Lambda functions, SQS queues, or SNS topics.
+Before using `awsmeter` with EventBridge, ensure you have:
 
-5. Configure IAM permissions to allow your application to publish events to the event bus. The IAM user needs the `events:PutEvents` permission.
+### AWS Environment
+- 🔐 **AWS Account** with appropriate permissions
+- 👤 **IAM User** with `events:PutEvents` permission
+- 🔑 **AWS Credentials** (Access Key ID, Secret Access Key, and optionally Session Token)
 
-6. Create the event bus.
+### Development Environment  
+- ☕ **JMeter** with `awsmeter` plugin installed ([installation guide](../../../../../../../../../README.md))
+- 📁 **AWS CLI** (optional, for verification commands)
+- 🌐 **LocalStack** (optional, for local testing)
 
-More details: [Creating and Managing Event Buses](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-event-bus.html).
+## Setup 🛠️
 
-# Getting Started
+### AWS EventBridge Setup
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/eventbus/EventBridgeStreamJavaSampler.png)
+1. **Create Event Bus** 🏗️
+   ```bash
+   # Using AWS CLI
+   aws events create-event-bus --name "your-custom-eventbus"
+   
+   # Or use the default event bus (no setup required)
+   ```
 
-After you installed `awsmeter` in JMeter, you can start using it to publish events to EventBridge. You need to fill the fields to connect to AWS using an IAM user with programmatic access. [awsmeter install details](https://github.com/JoseLuisSR/awsmeter).
+2. **Configure Event Rules** (Optional) 📝
+   - Navigate to: **Amazon EventBridge > Rules > Create rule**
+   - Define event patterns to match specific events
+   - Set targets (Lambda, SQS, SNS, etc.)
 
-You can find a JMeter Test Plan in this repository that was configured with EventBridge Producer. You just need to fill the below fields to execute the test:
+3. **Set IAM Permissions** 🔒
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": "events:PutEvents",
+         "Resource": "arn:aws:events:*:*:event-bus/*"
+       }
+     ]
+   }
+   ```
 
-* **event_bus_name**: The name of the event bus where you want to publish events. Use "default" for the default event bus or specify your custom event bus name.
+### LocalStack Setup (Local Testing) 🏠
 
-* **event_source**: The source of the event. This is a string that identifies the application or service that generated the event. For example, "myapp.orders" or "com.example.app".
+1. **Start LocalStack**
+   ```bash
+   docker run -d -p 4566:4566 localstack/localstack
+   ```
 
-* **event_detail_type**: A string that describes the type of event. This helps consumers understand what kind of event they're receiving. For example, "Order Placed" or "User Registration".
+2. **Configure AWS CLI for LocalStack**
+   ```bash
+   aws configure set endpoint-url http://localhost:4566
+   ```
 
-* **event_detail**: The event payload in JSON format. This contains the actual data of your event. The maximum size for an event is 256 KB.
+3. **Create Local Event Bus**
+   ```bash
+   aws events create-event-bus --name "local-test-bus" --endpoint-url http://localhost:4566
+   ```
 
-# Testing
+## Configuration ⚙️
 
-It's time to test. We are going to execute a single thread to publish events to EventBridge:
+> 💡 **AWS Credentials:** Configure your AWS credentials as described in the [Authentication section](../../../../../../../../../README.md#aws-authentication).
 
-1. Open JMeter test plan (present in this repository) in JMeter and go to EventBridge Thread Group > EventBridge Producer.
+### JMeter Test Plan Configuration
 
-2. Fill the parameters to connect to AWS using **Access key id**, **Secret Access Key** and **Session Token**. If you have [credentials file](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) in your work area, you just need to enter the name of the **profile** to get the access key id, secret access key and aws region from credentials and config file.
+![EventBridge Configuration](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/eventbus/EventBridgeStreamJavaSampler.png)
 
-3. Enter the parameters described in **Getting Started** section.
+#### Required Parameters
 
-4. Execute EventBridge Thread. When it finishes, you can see details per event including the time spent publishing the event to EventBridge, the response data, and metrics about the average, min and max time of the requests to EventBridge.
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| 🏷️ **event_bus_name** | Target event bus name | `"default"` or `"my-custom-bus"` |
+| 📍 **event_source** | Event source identifier | `"myapp.orders"` or `"com.example.service"` |
+| 🏷️ **event_detail_type** | Event type description | `"Order Placed"` or `"User Registration"` |
+| 📄 **event_detail** | JSON event payload (max 256KB) | `{"orderId": "12345", "amount": 99.99}` |
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/eventbus/awsmeter-eventbridge-stream-test.png)
+### Sample Event Configuration
 
-Now you can verify that events were published successfully:
-
-5. Check the response of the requests to see the event IDs that were assigned by EventBridge.
-
-6. If you have configured event rules and targets, check those targets to verify that events were routed correctly.
-
-7. You can also use AWS CLI to describe your event bus and rules:
-
+```json
+{
+  "event_bus_name": "my-application-bus",
+  "event_source": "ecommerce.orders",
+  "event_detail_type": "Order Processed",
+  "event_detail": {
+    "orderId": "ORD-2025-001",
+    "customerId": "CUST-12345",
+    "amount": 149.99,
+    "currency": "USD",
+    "timestamp": "2025-08-07T10:30:00Z"
+  }
+}
 ```
-aws events describe-event-bus --name {eventBusName}
-aws events list-rules --event-bus-name {eventBusName}
-```
 
-# CloudWatch Metrics
+## Monitoring 📈
 
-EventBridge sends information to CloudWatch about the events published, matched rules, and successful/failed invocations. CloudWatch generates metrics that help you monitor the performance and reliability of your event-driven applications.
+### CloudWatch Metrics
 
-The CloudWatch metrics for EventBridge include:
+EventBridge automatically publishes performance metrics to CloudWatch:
 
-* **IngestedEvents**: The number of events received by EventBridge.
+| Metric | Description | Use Case |
+|--------|-------------|----------|
+| 📥 **IngestedEvents** | Events received by EventBridge | Monitor event volume |
+| 🎯 **MatchedRules** | Rules matched by incoming events | Track routing efficiency |
+| ✅ **SuccessfulInvocations** | Successful target invocations | Measure delivery success |
+| ❌ **FailedInvocations** | Failed target invocations | Identify delivery issues |
 
-* **MatchedRules**: The number of rules that were matched by incoming events.
+### Monitoring Best Practices
 
-* **SuccessfulInvocations**: The number of successful invocations of targets.
+1. **Set Up Alarms** 🚨
+   - Configure CloudWatch alarms for failed invocations
+   - Monitor unusual spikes in event volume
+   - Track rule matching efficiency
 
-* **FailedInvocations**: The number of failed invocations of targets.
+2. **Performance Analysis** 📊
+   - Use JMeter's built-in reporters for load testing metrics
+   - Correlate JMeter results with CloudWatch metrics
+   - Analyze event patterns over time
 
-You can use this information to monitor the health of your event-driven architecture, identify bottlenecks, and set up alerts for failed event deliveries. The CloudWatch metrics are very useful for analyzing event patterns over time and for troubleshooting issues in your event routing.
+3. **Troubleshooting** 🔍
+   - Check event IDs in JMeter responses
+   - Verify target configurations for failed invocations
+   - Review CloudWatch Logs for detailed error information
 
-For more details, visit [CloudWatch Metrics for EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-monitoring.html).
+For comprehensive monitoring setup, visit [CloudWatch Metrics for EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-monitoring.html).
+
+---
+
+**Happy Testing!** 🎉 This guide should help you efficiently test AWS Event Bridge using awsmeter and JMeter.
