@@ -1,194 +1,364 @@
-# AWS Meter
+# AWS Meter 🚀
 
 ![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-kinesis-context-view.png)
 
-It is a JMeter plugin to execute tests over AWS services like Kinesis, SQS & SNS. This plugin has a set 
-of Java sampler per AWS service that are using AWS SDK to integrate with AWS and communicate with each service.
+**AWS Meter** is a comprehensive JMeter plugin designed to execute performance tests against AWS services including Kinesis, SQS, SNS, Cognito, and EventBridge. This plugin provides specialized Java samplers for each AWS service, leveraging the AWS SDK for seamless integration and communication.
 
-When you use AWS services you need set up those to process normal and peak of load. To make sure the service 
-configuration is right you can execute load testing with `awsmeter` to see the behaviour of the system under 
-variant or specific load. 
+## 🎯 Why Use AWS Meter?
 
-To get familiar with AWS you can use `awsmeter` to execute proof of concept (POC) over their services that 
-can help you understand capabilities, boundaries and components of each one.
+When deploying AWS services in production, you need to configure them to handle both normal and peak loads effectively. AWS Meter helps you:
 
-With `awsmeter` you can test the below aws services:
+- **Validate service configurations** under various load conditions
+- **Execute proof-of-concepts (POCs)** to understand AWS service capabilities and boundaries
+- **Perform load testing** to ensure your AWS infrastructure can handle expected traffic
+- **Identify bottlenecks** before they impact your production environment
+- **Test locally** using LocalStack for development and CI/CD pipelines
 
-* [Kinesis Data Stream](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/kinesis)
-* [SQS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sqs) 
-* [SNS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sns)
-* [Cognito](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/cognito)
-* [EventBridge](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/eventbus)
+## 🌟 Supported AWS Services
 
-# Install
+AWS Meter currently supports testing for the following services:
 
-This project is using gradle to resolve dependencies and package the main compiled classes and resources 
-from `src/main/resources` into a single JAR. To build the `.jar` execute the command:
+- 🌊 **[Kinesis Data Stream](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/kinesis)** - Real-time data streaming
+- 📬 **[SQS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sqs)** - Message queuing (Standard & FIFO)
+- 📢 **[SNS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sns)** - Push notifications (Standard & FIFO)
+- 🔐 **[Cognito](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/cognito)** - User authentication and authorization
+- 🎫 **[EventBridge](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/eventbus)** - Event-driven architecture
 
-    gradle uberJar
+**All services are fully compatible with LocalStack for local development! 🐳**
 
-You do not need to install gradle to build the .jar, you can use gradle wrapper feature instead, just run 
-the below command:
+## 📋 Prerequisites
 
-    gradlew uberJar
+Before installing AWS Meter, ensure you have:
 
-Gradle builds the `awsmeter-x.y.z.jar` in `/awsmeter/build/libs` to install `awsmeter` in JMeter just put in 
+- ☕ **Java 11 or higher** (recommended for full compatibility)
+- 🔧 **Apache JMeter** (latest version recommended)
+- 🏗️ **Gradle** (optional - wrapper included)
+- ☁️ **Active AWS Account** OR 🐳 **LocalStack** for local development
+- 🐳 **Docker** (required for LocalStack)
 
-    $JMETER_HOME/lib/ext
+### LocalStack Prerequisites 🐳
 
+For local development with LocalStack:
 
-# JMeter Plugins
+- **Docker**: Install [Docker Desktop](https://www.docker.com/products/docker-desktop) or Docker Engine
+- **LocalStack**: Install via pip: `pip install localstack`
+- **awslocal CLI** (optional): `pip install awscli-local`
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/jmeter-plugins-logo.png)
+## 🔧 Installation
 
-`awsmeter` is available in [JMeter Plugins](https://jmeter-plugins.org/), follow the below steps to install those:
+### Option 1: JMeter Plugins Manager (Recommended) ⭐
 
-1. [Install JMeter Plugins](https://jmeter-plugins.org/install/Install/). Download `plugins-manager.jar` from https://jmeter-plugins.org/install/Install/ and put it into `lib/ext` directory in your local JMeter folder.
+![JMeter Plugins Logo](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/jmeter-plugins-logo.png)
 
+The easiest way to install AWS Meter is through the JMeter Plugins Manager:
 
-2. Restart or open JMeter.
+1. **Install JMeter Plugins Manager**
+   - Download `plugins-manager.jar` from [jmeter-plugins.org](https://jmeter-plugins.org/install/Install/)
+   - Place it in `$JMETER_HOME/lib/ext/` directory
 
+2. **Restart JMeter**
 
-3. Go to **Options > Plugins Manager** then in **Available Plugins** tab search `aws`, select it and press **Apply Changes and Restart JMeter** button. `awsmeter` was build with Java 11, please execute JMeter with Java 11 to avoid issues.
+3. **Install AWS Meter**
+   - Navigate to **Options → Plugins Manager**
+   - Go to **Available Plugins** tab
+   - Search for "aws"
+   - Select AWS Meter and click **Apply Changes and Restart JMeter**
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/jmeter-plugins-awsmeter.png)
+![JMeter Plugins AWS Meter](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/jmeter-plugins-awsmeter.png)
 
-That's all, have fun using it.
+### Option 2: Manual Installation 🛠️
 
-# Setting Up
+If you prefer to build from source:
 
-Before use `awsmeter` for the first time, complete the following task:
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/JoseLuisSR/awsmeter.git
+   cd awsmeter
+   ```
 
-* **AWS Account**: You need aws account to use their cloud compute services, it is free you only paid for 
-  the services used. [Steps to create and active new aws account](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/). 
-  AWS has free tier for 12-months to use some products or services, more details [here](https://aws.amazon.com/free).
-  You can use AWS products and services in different [regions](https://infrastructure.aws/) around the world, when sig-in you can choose the region you want.
-  
+2. **Build the JAR file**
+   ```bash
+   # Using Gradle wrapper (recommended)
+   ./gradlew uberJar
+   
+   # Or using system Gradle
+   gradle uberJar
+   ```
 
-* **IAM user**: You need create new AWS IAM user with programmatic access to connect AWS service end-point 
-  using an access key ID and secret access key. Good practice is create new user instead use user root 
-  because you can grant the least privilege over the services for the new user. [Steps to create IAM User](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html).
-  
+3. **Install the plugin**
+   - Copy `awsmeter-x.y.z.jar` from `build/libs/` to `$JMETER_HOME/lib/ext/`
+   - Restart JMeter
 
-* **IAM Group**: You need create an IAM Group to attach policies to multiple IAM Users. Groups let you specify 
-  permissions over the AWS services you need to access, remember grant the least privilege.
-  
+### LocalStack Installation 🐳
 
-* **IAM Policy**: Policy define the permissions for an action over AWS service that IAM Identity (User, 
-  Group or Role) can execute. We are going to specify  which policies we need to attach to IAM Group 
-  to execute test for each service in the next sections.
-  
+Set up LocalStack for local AWS service emulation:
 
-* **Credential and Config files (optional)**: You need store the access key id and secret access key in a local file named 
-  credentials, in a folder named .aws in your home directory, also you can use AWS CLI to set up 
-  credentials file. You can store multiple set of access key and secret access key using profiles and 
-  specify the [AWS region](https://infrastructure.aws/) to connect. [Configure and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
+```bash
+# Install LocalStack
+pip install localstack
+localstack start
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/credentials-file.png) 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/config-file.png)
+# Install LocalStack CLI tools (optional but recommended)
+pip install awscli-local
 
+# Verify installation
+localstack --version
+```
 
-* **AWS CLI (optional)**: AWS Command Line Interface (CLI) is a tool to communicate with AWS through 
-  commands that can create and configure AWS services. You can use the command `aws configure` to create 
-  and initialize credentials and config files. [Installing AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
-  
+## ⚙️ Configuration
 
-* **JMeter**: [Download JMeter](https://jmeter.apache.org/download_jmeter.cgi) and follow the steps in Install section.
-  
-# Getting Started
+### 🔑 AWS Account Setup
 
-To start using `awsmeter` is necessary use JMeter, if you don't have experience working with JMeter you can see
-this [video tutorial for JMeter Beginners](https://youtube.com/playlist?list=PLhW3qG5bs-L-zox1h3eIL7CZh5zJmci4c).
+#### Step 1: Create AWS Account
+- Create a free [AWS account](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/)
+- Take advantage of the [12-month free tier](https://aws.amazon.com/free)
+- Choose your preferred [AWS region](https://infrastructure.aws/)
 
-This project has an example JMeter Test Plan that were configured to execute tests over [Kinesis Data Stream](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/kinesis), 
-[SQS Standard and FIFO Queue](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sqs), and more just open the file `awsmeter.jmx` in JMeter and fill the below java request parameters to connect to AWS Account:
+#### Step 2: Create IAM User
+- Create an [IAM user](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html) with **programmatic access**
+- Generate access key ID and secret access key
+- **Important**: Follow the principle of least privilege
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-parameters.png)
+#### Step 3: Configure IAM Permissions
+- Create an IAM Group with appropriate policies
+- Attach the user to the group
+- Grant only the minimum permissions needed for your tests
 
-* **aws_access_key_id**: When you create IAM user with programmatic access aws assign an access key id, use it value here.
-  Leave this parameter empty if you want to get the access key id from credentials file in .aws folder in your home directory.
-  
+#### Step 4: Set Up Credentials (Choose One Method)
 
-* **aws_secret_access_key**: AWS gives you a secret access key when you create an IAM User with programmatic access also, 
-  you only can show or download it value after finish creation of the user. Leave this parameter empty if you want to get 
-  the secret access key from credentials file in .aws folder in your home directory.
-  
+**Method A: Credentials File (Recommended for local development)**
 
-* **aws_session_token**: Specifies an AWS session token used as part of the credentials to authenticate the IAM user. 
-  A session token is required only if you manually specify temporary security credentials. Leave this parameter empty 
-  if you are not using [temporary credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html).
-  
+Create `~/.aws/credentials`:
+```ini
+[default]
+aws_access_key_id = YOUR_ACCESS_KEY_ID
+aws_secret_access_key = YOUR_SECRET_ACCESS_KEY
 
-* **aws_region**: The aws region where aws services are. [AWS Regions and Zones](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html)
-Leave this parameter empty to use the aws region defined in config file in .aws folder in yor home directory.
-  
+[localstack]
+aws_access_key_id = test
+aws_secret_access_key = test
 
-* **aws_configure_profile**: Use profile to group a collections of settings and credentials. When you have multiple aws accounts ([AWS Organization](https://aws.amazon.com/organizations/)) 
-  you can use profile to classify credentials for each AWS account. The main profile is 'default', choose other that you have in credentials and config files.
+[profile-name]
+aws_access_key_id = ANOTHER_ACCESS_KEY_ID
+aws_secret_access_key = ANOTHER_SECRET_ACCESS_KEY
+```
 
+Create `~/.aws/config`:
+```ini
+[default]
+region = us-east-1
+output = json
 
-## AWS Credentials in Cloud Environments
+[profile localstack]
+region = us-east-1
+output = json
+endpoint_url = http://localhost:4566
 
-`awsmeter` supports multiple credential sources and automatically uses the most appropriate one based on your configuration:
+[profile profile-name]
+region = eu-west-1
+output = json
+```
 
-### Local Development
-- **Explicit credentials**: Provide `aws_access_key_id` and `aws_secret_access_key` parameters in JMeter
-- **Profile-based**: Leave credential parameters empty and specify a profile name in `aws_configure_profile`
+**Method B: AWS CLI Setup**
+```bash
+# For AWS
+aws configure
 
-### Cloud Environments (ECS, EC2, Lambda)
-For applications running in AWS cloud environments with IAM roles, leave all credential parameters empty or set to their default values:
+# For LocalStack
+awslocal configure
+```
+
+**Method C: Environment Variables**
+```bash
+# For AWS
+export AWS_ACCESS_KEY_ID=your-access-key-id
+export AWS_SECRET_ACCESS_KEY=your-secret-access-key
+export AWS_DEFAULT_REGION=us-east-1
+
+# For LocalStack
+export AWS_ACCESS_KEY_ID=test
+export AWS_SECRET_ACCESS_KEY=test
+export AWS_DEFAULT_REGION=us-east-1
+export AWS_ENDPOINT_URL=http://localhost:4566
+```
+
+![Credentials File Example](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/credentials-file.png)
+![Config File Example](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/config-file.png)
+
+### 🌐 Cloud Environment Support
+
+AWS Meter automatically detects and uses the most appropriate credential source:
+
+#### Local Development 💻
+- **Explicit credentials**: Provide access key and secret in JMeter parameters
+- **Profile-based**: Use credential files with specific profiles
+- **LocalStack**: Use test credentials with custom endpoint
+
+#### Cloud Environments (ECS, EC2, Lambda) ☁️
+For applications running in AWS with IAM roles, leave credential parameters empty:
 
 ```
 aws_access_key_id: (empty)
-aws_secret_access_key: (empty)
+aws_secret_access_key: (empty)  
 aws_session_token: (empty)
-aws_configure_profile: default (or empty)
+aws_configure_profile: default
 ```
 
-`awsmeter` will automatically detect and use credentials from:
-- **ECS Task IAM Role** (when running in Amazon ECS)
-- **EC2 Instance Profile** (when running on Amazon EC2)
-- **Environment variables** (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN)
+AWS Meter will automatically use:
+- **ECS Task IAM Role** (Amazon ECS)
+- **EC2 Instance Profile** (Amazon EC2)
+- **Environment variables** (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
 
-This eliminates the need to manage credentials manually in cloud environments and follows AWS security best practices.
+## 🚀 Getting Started
+
+### First Steps with JMeter
+
+If you're new to JMeter, watch this helpful [JMeter Beginners Tutorial](https://youtube.com/playlist?list=PLhW3qG5bs-L-zox1h3eIL7CZh5zJmci4c).
+
+### Using the Example Test Plan
+
+1. **Open the example**: Load `awsmeter.jmx` in JMeter
+2. **Configure AWS parameters**: Fill in the following Java request parameters
+
+![AWS Meter Parameters](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-parameters.png)
+
+### 📝 Parameter Configuration
+
+#### For AWS Cloud ☁️
+
+| Parameter | Description | Required | Example |
+|-----------|-------------|----------|---------|
+| `aws_access_key_id` | Your AWS access key ID | ⚠️ | `AKIAIOSFODNN7EXAMPLE` |
+| `aws_secret_access_key` | Your AWS secret access key | ⚠️ | `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` |
+| `aws_session_token` | Session token for temporary credentials | ❌ | Leave empty unless using temporary credentials |
+| `aws_region` | AWS region for your services | ✅ | `us-east-1` |
+| `aws_configure_profile` | Profile name from credentials file | ❌ | `default` |
+| `aws_endpoint_custom` | Custom endpoint URL | ❌ | Leave empty for AWS |
+
+#### For LocalStack 🐳
+
+| Parameter | Description | Required | Example |
+|-----------|-------------|----------|---------|
+| `aws_access_key_id` | LocalStack access key | ✅ | `test` |
+| `aws_secret_access_key` | LocalStack secret key | ✅ | `test` |
+| `aws_session_token` | Session token | ❌ | Leave empty |
+| `aws_region` | AWS region | ✅ | `us-east-1` |
+| `aws_configure_profile` | Profile name | ❌ | `localstack` |
+| `aws_endpoint_custom` | LocalStack endpoint | ✅ | `http://localhost:4566` |
+
+**💡 Tip**: Leave credential parameters empty to use credential files or IAM roles automatically.
+
+### Service-Specific Configuration
+
+For detailed configuration instructions for each AWS service:
+
+- 🌊 **[Kinesis Data Stream](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/kinesis)**
+- 📬 **[SQS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sqs)**
+- 📢 **[SNS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sns)**
+- 🔐 **[Cognito](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/cognito)**
+- 🎫 **[EventBridge](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/eventbus)**
 
 
-To know the parameters needed by AWS Service please go to:
+## 🏗️ Architecture & Design
 
-* [Kinesis Data Stream](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/kinesis)
-* [SQS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sqs)
-* [SNS](https://github.com/JoseLuisSR/awsmeter/tree/main/src/main/java/org/apache/jmeter/protocol/aws/sns)
+AWS Meter follows a modular, extensible architecture that makes it easy to add support for new AWS services.
 
+![AWS Meter Class Diagram](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-class-diagram.png)
 
-# Design
+### Core Components
 
-`awsmeter` was designed to extend his behaviour to other AWS services, if you want to use JMeter and Java Sampler Request to do test over others AWS Services you just need to extend the class `AWSSampler.java` and implements `AWSClientSDK1.java` or `AWSClientSDK2.java` depend on AWS SDK version you need use, overwrite the methods to create SdkClient, define parameters, run and tear down the test.
+- **`AWSSampler.java`**: Base class for all AWS service samplers
+- **`AWSClientSDK1.java`**: Interface for AWS SDK v1 implementations
+- **`AWSClientSDK2.java`**: Interface for AWS SDK v2 implementations
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-class-diagram.png)
+### Package Structure
 
-Below you can see the class diagram with the details of the classes created for Kinesis Data Stream `KinesisProducerSampler.java`, SQS per queue type Standard `SQSProducerStandardQueue` and FIFO `SQSProducerFifoQueue`, and SNS per Topic type Standard `SNSProducerStandardTopic` and FIFO `SNSProducerFifoTopic`. Each class has his own logic to connect, produce events or messages and reuse the behaviour to record the test in JMeter and define the parameter to connect AWS account.
+Following JMeter's protocol convention:
 
-`awsmeter` is implementing JavaSamplerClient interface to write our own implementation by AWS Service and can use JMeter to harness multiple threads, input parameter control, and data collection. Each Java Sampler defined is a protocol then we are following the JMeter package convention to define protocol per aws service:
+- `org.apache.jmeter.protocol.aws.kinesis` - Kinesis Data Stream samplers
+- `org.apache.jmeter.protocol.aws.sqs` - SQS Standard and FIFO queue samplers  
+- `org.apache.jmeter.protocol.aws.sns` - SNS Standard and FIFO topic samplers
+- `org.apache.jmeter.protocol.aws.cognito` - Cognito authentication samplers
+- `org.apache.jmeter.protocol.aws.eventbus` - EventBridge samplers
 
-* **org.apache.jmeter.protocol.aws.kinesis**
-* **org.apache.jmeter.protocol.aws.sqs**
-* **org.apache.jmeter.protocol.aws.sns**
+### Extending AWS Meter
 
-Please use this convention to create new Java Sampler Request for other AWS Service.
+To add support for a new AWS service:
 
-# Troubleshooting
+1. Create a new package following the naming convention
+2. Extend `AWSSampler.java`
+3. Implement either `AWSClientSDK1.java` or `AWSClientSDK2.java`
+4. Override required methods for client creation, parameters, execution, and cleanup
 
+## 🛠️ Troubleshooting
 
-When you installed `awsmeter` using **jmeter-plugins** and executed JMeter with Java 8 or downwards, then probably you get the below exception:
+### Common Issues
 
-![Screenshot](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-compiled-issue.png)
+#### Java Version Compatibility ☕
 
-To fix it, please install Java 11 and execute JMeter with this version or install `awsmeter` following the steps described in the [Install](https://github.com/JoseLuisSR/awsmeter#install) section and execute JMeter with th version of Java you have (minimum 8). 
+**Problem**: Exception when using Java 8 or lower with JMeter Plugins installation
 
-# Localstack Support
-If you need to use the Localstack instead of real AWS - you should change **aws_endpoint_custom** parameter in plugin GUI from empty stirng to some URL of your Localstack instance (with Localstack Edge port)
+![Compilation Issue](https://raw.githubusercontent.com/JoseLuisSR/awsmeter/main/doc/img/awsmeter-compiled-issue.png)
 
-To avoid a problem with SSL validation - please add SSL certificate of your Localstack to JVM cacerts:
-```
-keytool -alias ANY_NAME -import -keystore "%JAVA_HOME%\lib\security\cacerts" -file some_localstack_selfsigned_certificate.crt
-```
+**Solutions**:
+1. **Upgrade Java**: Install Java 11+ and run JMeter with this version
+2. **Manual Installation**: Build from source and install manually
+3. **Check JMeter Version**: Ensure you're using a compatible JMeter version
+
+#### Authentication Issues 🔐
+
+**Problem**: "Unable to load AWS credentials" error
+
+**Solutions for AWS**:
+1. Verify credential file format and location (`~/.aws/credentials`)
+2. Check IAM user permissions
+3. Ensure correct region configuration
+4. Validate access key and secret key values
+
+**Solutions for LocalStack**:
+1. Use `test`/`test` credentials
+2. Ensure LocalStack is running: `curl http://localhost:4566/_localstack/health`
+3. Verify endpoint configuration: `http://localhost:4566`
+4. Check LocalStack logs for errors
+
+#### Connection Issues 🌐
+
+**Problem**: Timeout or connection refused errors
+
+**Solutions**:
+1. Verify AWS region matches your service location
+2. Check network connectivity and firewall settings
+3. Validate service endpoints
+4. Ensure IAM policies allow service access
+
+#### Performance Issues ⚡
+
+**Problem**: Slow test execution or timeouts
+
+**Solutions**:
+1. Increase JMeter heap size: `-Xms1g -Xmx4g`
+2. Adjust thread pool settings
+3. Optimize AWS service configurations
+4. Monitor AWS service limits and quotas
+
+### Getting Help 💬
+
+If you encounter issues not covered here:
+
+1. Check the [GitHub Issues](https://github.com/JoseLuisSR/awsmeter/issues)
+2. Review AWS service documentation
+3. Consult JMeter performance testing best practices
+4. Consider AWS support if using paid services
+
+## 📚 Additional Resources
+
+- 📖 **[AWS Documentation](https://docs.aws.amazon.com/)**
+- 🐳 **[LocalStack Documentation](https://docs.localstack.cloud/)**
+- 🎯 **[JMeter User Manual](https://jmeter.apache.org/usermanual/)**
+- 🏗️ **[AWS Architecture Center](https://aws.amazon.com/architecture/)**
+- 💡 **[Performance Testing Best Practices](https://jmeter.apache.org/usermanual/best-practices.html)**
+- 🔧 **[LocalStack Samples](https://github.com/localstack/localstack/tree/master/examples)**
+
+---
+
+**Happy Testing!** 🎉 If you find AWS Meter helpful, please consider giving it a ⭐ on GitHub.
