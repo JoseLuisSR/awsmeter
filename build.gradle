@@ -42,6 +42,14 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-core'
     testImplementation 'org.apache.jmeter:ApacheJMeter_java:5.6.2'
     testImplementation 'org.apache.jmeter:ApacheJMeter_core:5.6.2'
+    // Add additional JMeter dependencies needed for complete testing - use complete classnames
+    testImplementation('org.apache.jmeter:jorphan:5.6.2') {
+        // Remove the component metadata rule for this dependency
+        exclude group: 'org.apache.jmeter'
+    }
+    testImplementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    testImplementation 'org.apache.logging.log4j:log4j-api:2.20.0'
+    testImplementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.20.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.0'
     testImplementation 'org.mockito:mockito-core:5.5.0'
@@ -51,6 +59,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    
+    // Configure JVM args for Java 24 compatibility with Mockito/Byte Buddy
+    jvmArgs '-Dnet.bytebuddy.experimental=true'
     
     // Configure test logging
     testLogging {
