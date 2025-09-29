@@ -1,0 +1,61 @@
+name: PR Coverage Validation
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'src/**'
+      - 'build.gradle'
+
+env:
+  JAVA_VERSION: '24'
+
+jobs:
+  coverage-validation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'corretto'
+    
+    - name: Cache Gradle
+      uses: actions/cache@v4
+      with:
+        path: ~/.gradle
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+    
+    - name: Run tests with coverage
+      run: |
+        chmod +x gradlew
+        ./gradlew clean test jacocoTestReport jacocoTestCoverageVerification --no-daemon
+      env:
+        JVM_OPTS: '-Dnet.bytebuddy.experimental=true'
+    
+    - name: Extract coverage
+      id: coverage
+      run: |
+        COVERAGE=$(grep -o 'missed="[0-9]*" covered="[0-9]*"' build/reports/jacoco/test/jacocoTestReport.xml | tail -1 | \
+        awk -F'"' '{total=$2+$4; if(total>0) printf "%.2f", ($4/total)*100; else print "0"}')
+        echo "COVERAGE_PERCENT=${COVERAGE}" >> $GITHUB_OUTPUT
+    
+    - name: Comment on PR
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const coverage = '${{ steps.coverage.outputs.COVERAGE_PERCENT }}';
+          const status = parseFloat(coverage) >= 95 ? 'PASSED ✅' : 'FAILED ❌';
+          const comment = `## Coverage Report: ${coverage}%
+          **Status**: ${status}
+          **Required**: 95%`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
