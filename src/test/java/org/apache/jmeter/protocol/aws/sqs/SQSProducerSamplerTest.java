@@ -60,6 +60,22 @@ class SQSProducerSamplerTest {
      * Concrete test implementation of abstract SQSProducerSampler for testing purposes.
      */
     private static class TestSQSProducerSampler extends SQSProducerSampler {
+        
+        @Override
+        public SdkClient createSdkClient(Map<String, String> credentials) {
+            // Ensure region is always present for tests
+            Map<String, String> testCredentials = new HashMap<>(credentials);
+            if (!testCredentials.containsKey("aws_region") || testCredentials.get("aws_region").isEmpty()) {
+                testCredentials.put("aws_region", "us-east-1");
+            }
+            // Ensure basic credentials for tests
+            if (!testCredentials.containsKey("aws_access_key_id") || testCredentials.get("aws_access_key_id").isEmpty()) {
+                testCredentials.put("aws_access_key_id", "test-access-key");
+                testCredentials.put("aws_secret_access_key", "test-secret-key");
+            }
+            return super.createSdkClient(testCredentials);
+        }
+
         @Override
         public SendMessageRequest createSendMessageRequest(JavaSamplerContext context) throws JsonProcessingException {
             // Simple test implementation for abstract method
