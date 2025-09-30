@@ -9,6 +9,10 @@ on:
 
 env:
   JAVA_VERSION: '24'
+  # Add AWS environment variables for testing
+  AWS_REGION: 'us-east-1'
+  AWS_ACCESS_KEY_ID: 'test-access-key'
+  AWS_SECRET_ACCESS_KEY: 'test-secret-key'
 
 jobs:
   coverage-validation:
@@ -35,6 +39,10 @@ jobs:
         ./gradlew clean test jacocoTestReport jacocoTestCoverageVerification --no-daemon
       env:
         JVM_OPTS: '-Dnet.bytebuddy.experimental=true'
+        # Ensure AWS environment variables are available to the JVM
+        AWS_REGION: ${{ env.AWS_REGION }}
+        AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}        
     
     - name: Extract coverage
       id: coverage
