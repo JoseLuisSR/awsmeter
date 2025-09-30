@@ -280,7 +280,15 @@ class KinesisProducerSamplerTest {
             when(mockContext.getParameterNamesIterator()).thenReturn(
                 java.util.Collections.emptyIterator()
             );
-
+            
+            // Provide default AWS region when getParameter is called for missing parameters
+            when(mockContext.getParameter("aws_region")).thenReturn("us-east-1");
+            when(mockContext.getParameter("aws_access_key_id")).thenReturn("test-access-key");
+            when(mockContext.getParameter("aws_secret_access_key")).thenReturn("test-secret-key");
+            when(mockContext.getParameter("aws_endpoint_custom")).thenReturn("");
+            when(mockContext.getParameter("aws_session_token")).thenReturn("");
+            when(mockContext.getParameter("aws_configure_profile")).thenReturn("default");
+        
             // When & Then
             assertDoesNotThrow(() -> sampler.setupTest(mockContext));
         }

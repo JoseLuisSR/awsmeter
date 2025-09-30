@@ -18,9 +18,11 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
@@ -56,6 +58,21 @@ class CognitoProducerSamplerTest {
      * Concrete test implementation of abstract CognitoProducerSampler for testing purposes.
      */
     private static class TestCognitoProducerSampler extends CognitoProducerSampler {
+
+        @Override
+        public SdkClient createSdkClient(Map<String, String> credentials) {
+            // Ensure region is always present for tests
+            Map<String, String> testCredentials = new HashMap<>(credentials);
+            if (!testCredentials.containsKey("aws_region") || Optional.ofNullable(testCredentials.get("aws_region")).isEmpty()) {
+                testCredentials.put("aws_region", "us-east-1");
+            }
+            // Ensure basic credentials for tests
+            if (!testCredentials.containsKey("aws_access_key_id") || Optional.ofNullable(testCredentials.get("aws_access_key_id")).isEmpty()) {
+                testCredentials.put("aws_access_key_id", "test-access-key");
+                testCredentials.put("aws_secret_access_key", "test-secret-key");
+            }
+            return super.createSdkClient(testCredentials);
+        }
         
         @Override
         public Arguments getDefaultParameters() {
