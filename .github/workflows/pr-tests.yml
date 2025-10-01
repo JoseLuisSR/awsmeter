@@ -17,6 +17,8 @@ env:
 jobs:
   coverage-validation:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     
     steps:
     - uses: actions/checkout@v4
@@ -44,26 +46,22 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}        
     
-    - name: Extract coverage
-      id: coverage
-      run: |
-        COVERAGE=$(grep -o 'missed="[0-9]*" covered="[0-9]*"' build/reports/jacoco/test/jacocoTestReport.xml | tail -1 | \
-        awk -F'"' '{total=$2+$4; if(total>0) printf "%.2f", ($4/total)*100; else print "0"}')
-        echo "COVERAGE_PERCENT=${COVERAGE}" >> $GITHUB_OUTPUT
-    
-    - name: Comment on PR
-      uses: actions/github-script@v7
+    - name: JaCoCo Coverage Report
+      id: jacoco
+      uses: madrapps/jacoco-report@v1.7.2
       with:
-        script: |
-          const coverage = '${{ steps.coverage.outputs.COVERAGE_PERCENT }}';
-          const status = parseFloat(coverage) >= 95 ? 'PASSED ✅' : 'FAILED ❌';
-          const comment = `## Coverage Report: ${coverage}%
-          **Status**: ${status}
-          **Required**: 95%`;
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: comment
-          });
+        paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+        token: ${{ secrets.GITHUB_TOKEN }}
+        min-coverage-overall: 95
+        min-coverage-changed-files: 95
+        title: '📊 Code Coverage Report'
+        update-comment: true
+        pass-emoji: '✅'
+        fail-emoji: '❌'
+        continue-on-error: false
+    
+    - name: Fail if coverage is insufficient
+      if: ${{ steps.jacoco.outputs.coverage-overall < 95.0 }}
+      run: |
+        echo "::error::Overall coverage ${{ steps.jacoco.outputs.coverage-overall }}% is below the required 95%"
+        exit 1
