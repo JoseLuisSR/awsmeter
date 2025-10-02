@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'jacoco'
 }
 
 group 'org.apache.jmeter.protocol.aws'
@@ -74,6 +75,54 @@ test {
     
     // Ensure tests run even if no changes detected
     outputs.upToDateWhen { false }
+    
+    // Enable Jacoco test coverage
+    finalizedBy jacocoTestReport
+}
+
+// Configure Jacoco test report generation
+jacocoTestReport {
+    dependsOn test
+    
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
+    
+    finalizedBy jacocoTestCoverageVerification
+}
+
+// Configure Jacoco coverage verification with 95% threshold
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.95 // 95% overall coverage requirement
+            }
+        }
+        
+        rule {
+            enabled = true
+            element = 'CLASS'
+            
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.75 // Allow 75% minimum for individual classes to handle edge cases
+            }
+            
+            excludes = [
+                '*.test.*',
+                '**/*Test*',
+                '**/*TestCase*'
+            ]
+        }
+    }
 }
 
 // Custom task to run only unit tests with detailed output
@@ -103,6 +152,56 @@ task unitTest(type: Test) {
         html.required = true
         junitXml.required = true
     }
+    
+    // Enable Jacoco coverage for unit tests
+    finalizedBy jacocoTestReport
+}
+
+// Custom Jacoco report task for unit tests
+task unitTestCoverageReport(type: JacocoReport) {
+    dependsOn unitTest
+    
+    executionData unitTest
+    sourceSets sourceSets.main
+    
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
+}
+
+// Custom coverage verification for unit tests
+task unitTestCoverageVerification(type: JacocoCoverageVerification) {
+    dependsOn unitTestCoverageReport
+    
+    executionData unitTest
+    sourceSets sourceSets.main
+    
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.95 // 95% coverage requirement for CI/CD
+            }
+        }
+        
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.50 // 50% minimum coverage for individual classes
+            }
+        }
+    }
+}
+
+// Combined task for CI/CD - runs tests and validates coverage
+task ciTest {
+    description = 'Runs unit tests and validates 95% coverage for CI/CD'
+    group = 'verification'
+    dependsOn unitTest, unitTestCoverageVerification
 }
 
 // Task to clean and run tests

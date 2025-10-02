@@ -1,0 +1,67 @@
+name: PR Coverage Validation
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'src/**'
+      - 'build.gradle'
+
+env:
+  JAVA_VERSION: '24'
+  # Add AWS environment variables for testing
+  AWS_REGION: 'us-east-1'
+  AWS_ACCESS_KEY_ID: 'test-access-key'
+  AWS_SECRET_ACCESS_KEY: 'test-secret-key'
+
+jobs:
+  coverage-validation:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'corretto'
+    
+    - name: Cache Gradle
+      uses: actions/cache@v4
+      with:
+        path: ~/.gradle
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+    
+    - name: Run tests with coverage
+      run: |
+        chmod +x gradlew
+        ./gradlew clean test jacocoTestReport jacocoTestCoverageVerification --no-daemon
+      env:
+        JVM_OPTS: '-Dnet.bytebuddy.experimental=true'
+        # Ensure AWS environment variables are available to the JVM
+        AWS_REGION: ${{ env.AWS_REGION }}
+        AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+    
+    - name: JaCoCo Coverage Report
+      id: jacoco
+      uses: madrapps/jacoco-report@v1.7.2
+      with:
+        paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+        token: ${{ secrets.GITHUB_TOKEN }}
+        min-coverage-overall: 95
+        min-coverage-changed-files: 95
+        title: '📊 Code Coverage Report'
+        update-comment: true
+        pass-emoji: '✅'
+        fail-emoji: '❌'
+        continue-on-error: false
+    
+    - name: Fail if coverage is insufficient
+      if: ${{ steps.jacoco.outputs.coverage-overall < 95.0 }}
+      run: |
+        echo "::error::Overall coverage ${{ steps.jacoco.outputs.coverage-overall }}% is below the required 95%"
+        exit 1
