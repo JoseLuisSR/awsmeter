@@ -350,6 +350,70 @@ If you encounter issues not covered here:
 3. Consult JMeter performance testing best practices
 4. Consider AWS support if using paid services
 
+## 🤝 Contributing
+
+We welcome contributions to AWS Meter! Whether you're fixing bugs, adding new AWS service support, or improving documentation, your help is appreciated.
+
+### 📋 Pull Request Guidelines
+
+Before submitting a PR, please ensure your contribution meets these requirements:
+
+#### 🧪 Testing & Coverage Requirements
+- **Minimum 95% code coverage** is required for all new and modified code
+- All tests must pass before PR approval
+- Write comprehensive unit tests for new features
+- Include integration tests when applicable
+
+#### 🔄 PR Workflow
+
+1. **Fork the repository** and create a feature branch
+   ```bash
+   git checkout -b feature/your-awesome-feature
+   ```
+
+2. **Make your changes** following the existing code style
+   - Add new AWS service samplers in appropriate packages
+   - Follow the established architecture patterns
+   - Update documentation as needed
+
+3. **Write tests** with proper coverage
+   ```bash
+   # Run tests locally to ensure they pass
+   ./gradlew clean test jacocoTestReport
+   ```
+
+4. **Submit your PR** with:
+   - Clear description of changes
+   - Reference to any related issues
+   - Screenshots/examples if applicable
+
+#### ✅ Automated Validation
+
+Our CI pipeline automatically validates:
+- ☕ **Java compatibility** (Java 24)
+- 🧪 **Test execution** on Ubuntu latest
+- 📊 **Coverage reporting** via JaCoCo
+- 🛡️ **Coverage enforcement** (95% minimum)
+- 📝 **PR status updates** with coverage reports
+
+#### 👨‍💻 Code Review
+
+- All PRs require review by [@JoseLuisSR](https://github.com/JoseLuisSR)
+- Address any feedback promptly
+- Keep PRs focused and reasonably sized
+- Ensure compatibility with both AWS and LocalStack
+
+#### 💡 Ideas for Contributions
+
+Looking to contribute? Consider these areas:
+- 🆕 Support for additional AWS services
+- 🐛 Bug fixes and performance improvements
+- 📚 Documentation enhancements
+- 🧪 Test coverage improvements
+- 🔧 LocalStack compatibility updates
+
+**Thank you for helping make AWS Meter better!** 🙏
+
 ## 📚 Additional Resources
 
 - 📖 **[AWS Documentation](https://docs.aws.amazon.com/)**
@@ -358,7 +422,5 @@ If you encounter issues not covered here:
 - 🏗️ **[AWS Architecture Center](https://aws.amazon.com/architecture/)**
 - 💡 **[Performance Testing Best Practices](https://jmeter.apache.org/usermanual/best-practices.html)**
 - 🔧 **[LocalStack Samples](https://github.com/localstack/localstack/tree/master/examples)**
-
----
 
 **Happy Testing!** 🎉 If you find AWS Meter helpful, please consider giving it a ⭐ on GitHub.

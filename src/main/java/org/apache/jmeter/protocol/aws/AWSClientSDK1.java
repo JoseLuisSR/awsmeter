@@ -26,7 +26,7 @@ public interface AWSClientSDK1 extends AWSClient{
      *        Represents the input of JMeter Java Request parameters.
      * @return AwsSyncClientBuilder by AWS Service.
      */
-    AwsSyncClientBuilder createAWSClient(Map<String, String> credentials);
+    AwsSyncClientBuilder<?, ?> createAWSClient(Map<String, String> credentials);
 
     /**
      * Build AWS Credential Provider with Session Credential, Static Credential, or Default Credential Chain.
